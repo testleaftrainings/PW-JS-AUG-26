@@ -1,0 +1,330 @@
+
+
+
+Week1.Day1 :
+
+Notes;
+
+
+1. Web application :
+
+
+=> Static Application
+=> Dynamic Application
+
+1. HTML (Hyper Test Markup Language) Tags => Define the structure of the web application.
+2. CSS(Cascading Style Sheet) => Colours in a application.
+3. JavaScript => Interactivity(Event Driven Model)=> Click action is an event driven  and JS reponds.
+
+2. Validation
+
+2.a. Front Validation => checks for the format of an username / email / data input
+
+=> JavaScript was used to do the front end validation
+
+
+2.b. Backend Validation => checks the record present in backend server (GitHub server)
+
+
+Asynchronous / Non-blocking IO try in console of the browser :
+
+console.log("Step1")
+setTimeout(()=>{console.log("Step2")},3000)
+console.log("Step3")
+
+Output :
+
+ Step1
+ Step3
+ Step2
+
+
+
+---
+
+Datatypes in JavScript :
+
+1. numbers
+2. string
+3. boolean
+4. undefined
+5. null
+
+---
+
+Naming Conventions in JavaScript
+
+=> File Names :
+--------------
+
+camelCase
+
+Example:
+
+loginPage.js
+userProfile.js
+
+=> Variables :
+-------------
+
+camelCase
+
+Start with a lowercase letter
+
+Example:
+
+isActive
+userName
+totalAmount
+
+=> Classes
+-----------
+
+PascalCase
+
+Start with an uppercase letter
+
+Example:
+
+class LoginPage { }
+class UserService { }
+
+
+---
+
+Important terms to understand : 
+
+***************************************************************************************************************
+
+Analogy 1: Mobile Contact Saving ⭐ (My Favorite)
+
+Imagine your phone contacts.
+
+var
+var Ravi = "9876543210";
+var Ravi = "9999999999";
+
+Analogy
+
+You save a contact:
+
+Ravi → 9876543210
+
+Later you accidentally save:
+
+Ravi → 9999999999
+
+Phone says:
+
+Sure, I'll overwrite it.
+
+No warning.
+
+This is exactly how var behaves.
+
+let
+let Ravi = "9876543210";
+let Ravi = "9999999999"; // Error
+
+Phone says:
+
+Contact 'Ravi' already exists.
+Create a different contact name.
+
+This is let.
+
+const
+const Ravi = "9876543210";
+
+Imagine this is your emergency contact.
+
+Once marked:
+
+Emergency Contact → Ravi
+
+Trying to replace it:
+
+Emergency Contact → Suresh
+
+System says:
+
+Not allowed.
+
+Students instantly understand:
+
+var  → overwrite allowed
+let  → duplicate not allowed
+const → duplicate not allowed + value cannot change
+
+------------------------------------------------
+---
+
+# 1. Declaration :
+
+---
+
+Declaration means creating a variable "x" and giving it a name using a keyword "var".
+
+This is to tell JavaScript that a variable exist (creating memory space) in the name of x using the keyword "var".
+
+🔹 No value is given yet and hence we term it as undefined.
+
+
+var x;
+
+
+**Analogy :** Declaration is like creating a new contact entry in your phone and saving the contact name.
+👉 The contact exists, but no phone number is saved yet.
+
+---
+
+# 2. Assignment
+
+---
+
+Assignment means giving a value to an already declared variable.
+
+
+x = 100;
+
+
+**Analogy :** Assignment is like adding a phone number to an already created contact.
+👉 Now the contact has a phone number.
+
+---
+
+# 3. Initialization
+
+Initialization means declaring a variable and assigning a value to it at the same time.
+
+
+var x = 100;
+
+
+**Analogy :** Initialization is like creating a contact and saving the phone number at the same time.
+👉 Creating the contact and filling its details in one step.
+
+---
+
+Using the var keyword, we can store different kinds of values such as numbers, strings, booleans, undefined, and null.
+
+Each of these represents a single value and is called a Primitive Data Type.
+
+When we want to store a collection of values, like adding multiple products to a shopping cart, we use Arrays and Objects.
+
+**Array → Collection of values (list)**
+
+**Object → Collection of values with names (key–value pairs)**
+
+---
+
+# Real-life Analogy on the difference between var, let, const :
+
+## 🟨 var — You can create the same contact again and change the phone number
+
+📱 Mobile Contact Saving Analogy
+
+**Declaration** → Creating a contact named **x**
+
+**Redeclaration** → Creating/saving the contact name **x** again
+
+**Assignment** → Saving a phone number for the contact
+
+**Reassignment** → Replacing the phone number with a different one
+
+With **var**, the phone is flexible — you can save the same contact name again and again and change its phone number.
+
+### var rules :
+
+| Aspect                    | Redeclaration | Reassignment |
+| ------------------------- | ------------- | ------------ |
+| What repeats?             | Contact name  | Phone number |
+| Uses `var` keyword again? | Yes           | No           |
+| Changes memory?           | No            | No           |
+| Allowed with `var`?       | ✅ Yes         | ✅ Yes        |
+
+### Example:
+
+
+var x = 10;   // Declaration + assignment
+var x = 20;   // ✅ Redeclaration allowed
+
+x = 30;       // ✅ Reassignment allowed
+
+---
+
+## 🟦 let — You can change the phone number, but you cannot create the same contact again
+
+📱 Mobile Contact Saving Analogy
+
+**Declaration** → Creating a contact named **y**
+
+**Redeclaration** → ❌ Not allowed (you cannot create/save the same contact name **y** again)
+
+**Assignment** → Saving a phone number for the contact
+
+**Reassignment** → Replacing the phone number with something else
+
+### let rules :
+
+| Aspect                    | Redeclaration | Reassignment |
+| ------------------------- | ------------- | ------------ |
+| What repeats?             | Contact name  | Phone number |
+| Uses `let` keyword again? | Yes ❌ (Error) | No           |
+| Changes memory?           | No            | No           |
+| Allowed with `let`?       | ❌ No          | ✅ Yes        |
+
+### Example :
+
+
+let y = 10;   // Declaration + assignment
+let y = 20;   // ❌ Error (redeclaration not allowed)
+
+y = 30;       // ✅ Reassignment allowed
+
+
+---
+
+## 🟥 const — You cannot create the same contact again or change the phone number
+
+📱 Mobile Contact Saving Analogy
+
+**Declaration** → Creating a contact named **z**
+
+**Assignment** → Saving a phone number for the contact (must be done immediately, otherwise const throws an error)
+
+**Redeclaration** → ❌ Not allowed
+
+**Reassignment** → ❌ Not allowed
+
+Once the phone number is saved, that contact becomes locked forever 🔒
+
+### const rules :
+
+| Aspect                      | Redeclaration | Reassignment |
+| --------------------------- | ------------- | ------------ |
+| What repeats?               | Contact name  | Phone number |
+| Uses `const` keyword again? | Yes ❌ (Error) | No ❌ (Error) |
+| Changes memory?             | No            | No           |
+| Allowed with `const`?       | ❌ No          | ❌ No         |
+
+### Example :
+
+
+const z = 50;  // Declaration + assignment is mandatory
+const z = 60;  // ❌ Error (no redeclaration)
+
+z = 70;        // ❌ Error (no reassignment)
+
+
+---
+
+# One-line summary:
+
+📱 **var → Create the same contact again & change the phone number**
+
+📱 **let → Keep the same contact, change the phone number**
+
+📱 **const → Same contact, same phone number forever**
+
+---
