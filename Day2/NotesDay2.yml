@@ -1,0 +1,239 @@
+📑 Agenda for Week 1 Day 2 - JavaScript Core Concepts
+🎯 [Focus: Strengthening JavaScript foundations]
+
+📆 Date: 16 Aug. 2026 (Sunday)  
+
+🕝 Session Highlights
+
+ Recap of Day 1
+* Revisiting Key Takeaways  
+
+1. Operators & Conditional Statements
+* Building Logic and Decision-Making Skills  
+* [Practice]
+
+2. Diving into Loops
+* For Loops, While Loops, and Iteration Techniques  
+* Practice with Automation Use Cases  
+
+**********Handson Acivity on conditional and looping statement**************
+
+3. String
+* Exploring Methods and Real-world Use Cases
+* [Practice] Solve String-based Problems
+
+
+🕡 Wrap Up / Q&A 
+
+📝 Keep your physical notebook and pen handy to sketch out ideas!
+
+
+NotesWeek1Day2 :
+----------------
+
+
+Hoisting :
+---------
+
+Hoisting is JavaScript’s behavior of scanning the entire .js file before execution, 
+collecting all var declarations, and creating memory for them with the value undefined before any line of code runs.
+
+Example
+
+console.log(a); // undefined
+var a = 10;
+
+
+What JS internally does during the scan phase:
+
+a → undefined   (memory created)
+
+Then during execution phase:
+
+a = 10
+
+So this works because:
+
+The declaration is hoisted, but the value is assigned later
+
+------------------------------------------------------------------------
+
+🟦 Hoisting with let
+
+JavaScript scans the whole file, finds let declarations, and creates memory for them — but does NOT assign undefined.
+They stay in a Temporary Dead Zone (TDZ) until the declaration line is executed.
+
+Example
+console.log(a); // ❌ ReferenceError
+let a = 10;
+
+What happens internally
+
+Scan phase
+
+a → <uninitialized>   (TDZ)
+
+Execution phase
+
+let a = 10  → now value is assigned
+
+Because a has no value yet, accessing it before the declaration is illegal.
+
+------------------------------------------------------------------------
+🟥 Hoisting with const
+
+JavaScript scans the whole file, creates memory for const, but keeps it uninitialized in TDZ — and it must be assigned immediately at the declaration line.
+
+Example
+console.log(b); // ❌ ReferenceError
+const b = 20;
+
+Internally
+
+Scan phase
+
+b → <uninitialized>   (TDZ)
+
+
+Execution phase
+
+const b = 20 → assigned once, then locked 🔒
+
+------------------------------------------------------------------------
+SUMMARY ON HOISTING for var,let and const :
+------------------------------------------
+
+var is hoisted with undefined,
+let and const are hoisted too — but locked in TDZ until their line executes.
+
+-----------------------------------------------------------
+
+THE STORY BEHIND HOISTING :
+---------------------------
+Why did JavaScript introduce hoisting for var?
+
+Because JavaScript was designed to be forgiving and beginner-friendly.
+
+In 1995, JavaScript was created in just 10 days for non-programmers writing small scripts inside HTML pages.
+People wrote code like this:
+
+total = price + tax;
+var price = 100;
+var tax = 10;
+
+
+In strict languages like Java or C, this would crash.
+But JS designers wanted this to work without errors.
+
+So they said:
+
+“Before running the code, scan the whole file and register all var variables first.”
+
+That decision created hoisting.
+
+*******************************************************************************************
+
+Equality Operator applied on "null" and "undefined"
+---------------------------------------------------
+
+null == undefined → Why TRUE?
+console.log(null == undefined);  // true
+
+-------------------------------------------------------------
+
+Strict Equality (===) in undefined and null:
+-----------------------------------------------
+
+1️⃣ console.log(null === undefined) // false
+🔎 Internally (Abstract Equality Comparison Algorithm)
+
+When JS sees:
+
+null == undefined
+
+
+It follows a special rule defined in ECMAScript spec:
+
+If one value is null and the other is undefined, return true.
+
+🚨 No type conversion happens here.
+
+It is a direct hard-coded rule in the spec.
+
+So internally:
+
+Step 1: Types are different
+Step 2: It is special ECMA rule
+
+---------------------------------------------------------------------------------
+
+1️⃣ console.log(undefined === undefined) // true
+
+Why is this true?
+
+Both sides are undefined
+
+Same type → undefined
+
+Same value → undefined
+
+So result is true.
+
+2️⃣ Loose Equality (==)
+== checks:
+
+✅ Value
+
+⚠️ Allows type conversion (coercion)
+
+console.log(undefined == undefined) // true
+Why is this also true?
+
+Because:
+
+Both sides are already undefined
+
+No type conversion needed
+
+They are identical
+
+So result is again true.
+
+*******************************************************************************************
+
+looping :
+--------
+
+for -> “Use for when you know how many times to repeat.”
+
+while → “Check first, then act”
+do-while → “Act first, then check”
+
+while loop example :
+------------------
+
+const nextButton = page.locator('.navgbutton');
+
+while (await nextButton.isEnabled()) {
+  await nextButton.click();
+}
+
+*******************************************************************************************
+
+Login Retry Example (Framework Level) - do while loop :
+-----------------------------------------
+let loginSuccess;
+let attempt = 0;
+
+do {
+    loginSuccess = await performLogin(username, password);
+    attempt++;
+
+} while (!loginSuccess && attempt < 3);
+
+if (!loginSuccess) {
+    console.log("Account locked or invalid credentials");
+}
+
+
+----------------------------------------------
