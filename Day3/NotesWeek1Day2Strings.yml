@@ -1,0 +1,371 @@
+
+JavaScript "String" Notes :
+------
+
+Difference between string literal and object literal :
+------------------------------------------------------
+
+We will look into new String() not because we use it in real automation projects, but because it helps understand how JavaScript handles primitives vs objects, which prevents bugs in frameworks like Playwright.
+
+The real concept to learn is :
+
+Primitive vs Object
+
+Primitive string:
+
+let a = "Testleaf";
+let b = "Testleaf";
+
+console.log(a === b); // O/P => true => Because primitives are compared by value.
+
+Object string:
+
+let a = new String("Testleaf");
+let b = new String("Testleaf");
+
+console.log(a === b); // O/P => false => Because JavaScript compares object reference (memory location).
+---------------------------------------
+"==="
+
+1. reference comparison
+
+| Type      | What `===` Compares |
+| --------- | ------------------- |
+| Primitive | Value + Type        |
+| Object    | Memory reference    |
+--------------------------------------------------------------------------------
+
+2. memory allocation
+
+| Type      | Stored In Variable | Memory Location   |
+| --------- | ------------------ | ----------------- |
+| Primitive | Actual value       | Stack (generally) |
+| Object    | Reference          | Heap              |
+
+---------------------------------------------------
+
+//String literal : 
+
+let companyName = "Testleaf"; // address : 100
+let firmName = "Testleaf"; // address : 100
+
+//Object literal :
+
+let companyNameObj = new String(`Testleaf`) // address : 101
+let firmNameObj = new String(`Testleaf`)  // address : 102
+
+----------------------------------------------------------------------------------------
+Difference between concatenation "+" and template literal `${}`
+---------------------------------------------------------------
+
+Example:
+
+let price = 100;
+let quantity = 3;
+
+console.log(`Total price is ${price * quantity}`);
+
+Output
+
+Total price is 300
+
+Doing the same with + becomes messy:
+
+console.log("Total price is " + (price * quantity));
+
+---------------
+
+Which is easier to read?
+
+"User " + name + " has logged in at " + time
+
+vs
+
+`User ${name} has logged in at ${time}`
+
+-------------------------------------------------------------------------
+
+let course = "Playwright"
+
+   Length | Index | Negative Index   
+P - 1        0        -10
+l - 2        1        -9
+a - 3        2        -8
+y - 4        3        -7
+w - 5        4        -6
+r - 6        5        -5
+i - 7        6        -4
+g - 8        7        -3
+h - 9        8        -2
+t -10        9        -1
+
+
+Important note for slice :
+
+In slice(start, end), JavaScript extracts characters from the start index up to, but not including, the end index. 
+If the start position comes after the end position, slice() returns an empty string.
+------------------------------------------------------------------------------
+WHY DO WE USE NEGATIVE INDEX ?
+
+Negative indexes in `slice()` are **very useful in real-world programming** because they help you extract parts of a string *from the end*, without calculating the exact length.
+
+Here are the most common real use cases:
+
+---
+
+## ✅ **1. Getting last few characters (like file extension)**
+
+Example: Extracting file extension dynamically.
+
+let filename = "document.pdf";
+let ext = filename.slice(-3); 
+console.log(ext);  // pdf
+
+Why useful?
+→ You don’t need to know the string length or do `filename.length - 3`.
+
+---
+
+## ✅ **2. Hiding sensitive info (masking mobile, email, card numbers)**
+
+let card = "1234 5678 9876 5432";
+let masked = "XXXX XXXX XXXX " + card.slice(-4);
+
+console.log(masked); // XXXX XXXX XXXX 5432
+
+Real use case: banking apps, OTP screens.
+
+---
+
+## ✅ **3. Extracting last N characters of logs, responses, or IDs**
+
+let logId = "LOG_2025_12_02_ABCDEFG";
+console.log(logId.slice(-7));  // ABCDEFG
+```
+
+Useful in debugging systems, log trackers, and APIs.
+
+-----------------------------------------------------------------------------------
+
+## **Why not just use positive indexes?**
+
+Yes, you *can* extract the last 3 characters using **start index + end index**, but it becomes **less practical and less readable**.
+
+Let’s see how.
+
+
+# ✅ Using start index & end index (without negative index)
+
+To extract `"pdf"` from `"document.pdf"`:
+
+### Step 1: Calculate string length
+
+```js
+let filename = "document.pdf";    // length = 12
+```
+
+### Step 2: You want last 3 chars → start at index `12 - 3 = 9`
+
+### Step 3: End index is the string length (12)
+
+```js
+let ext = filename.slice(9, 12);
+console.log(ext);  // pdf
+```
+
+---
+
+# ❗ Problem with this approach
+
+You **must calculate**:
+
+* string length
+* start index by doing `length - 3`
+* supply an explicit end index
+
+This becomes harder when:
+
+* filename string length changes
+* dynamic values come from API/user inputs
+
+Example:
+If filename is `"report.final.version.pdf"`, you *cannot know* the extension length easily.
+
+---
+
+# ✅ Negative index wins
+
+One simple line:
+
+```js
+filename.slice(-3);  // pdf
+```
+
+→ Autocalculates the start index
+→ End index automatically becomes end of string
+→ Works with any string length
+→ More readable
+
+---
+
+#  Conclusion
+
+### ✔️ Yes, you *can* use start + end index
+
+### ❌ But it becomes complicated and not dynamic
+
+### ✔️ Negative index is the best choice for extracting “last n characters”
+
+---
+
+## Summary
+
+Negative indexes help when:
+
+* You want to extract from **end of string**
+* You don’t know/need the **string length**
+* You want cleaner, shorter, more readable code
+* You deal with **file names, URLs, logs, masks, IDs, formatting**
+
+------------------------------------------------------------------------------------------
+
+Difference between slice() and substring()
+
+
+| Feature           | `slice()`                 | `substring()`         |
+| ----------------- | ------------------------- | --------------------- |
+| Start Index       | Included                  | Included              |
+| End Index         | Not included              | Not included          |
+| If `start > end`  | Returns empty string `""` | Swaps the values      |
+| Negative Index    | Allowed                   | Not allowed           |
+| Negative Handling | Counts from end           | Treated as `0`        |
+| Swapping          | ❌ Does NOT swap           | ✅ Swaps automatically |
+| Common Use        | Modern & flexible         | Older method          |
+
+
+Real Reason JavaScript has both substring() and slice() substring() came first (old JavaScript)
+
+Early JavaScript designers created:
+
+substring()
+
+But developers later wanted:
+
+negative indexes
+
+more predictable behavior
+
+So JavaScript introduced:
+
+slice()
+
+But they couldn't remove substring() because it would break millions of existing websites.
+
+So both remain in the language.
+-----------------------------------------------
+
+1️⃣ includes() ⭐ 
+
+Checks if a string contains a value.
+
+let course = "Playwright";
+
+console.log(course.includes("wright")); // true
+console.log(course.includes("Java"));   // false
+
+
+👉 Used in:
+
+Validation
+
+API response checks
+
+UI text verification
+
+let apiStatus = "201 Created";
+
+console.log(apiStatus.includes("201")); // true
+console.log(apiStatus.includes("404")); // false
+
+-------------------------------
+
+2️⃣ startsWith() & endsWith()
+console.log(course.startsWith("Play"));  // true
+console.log(course.endsWith("right"));   // true
+
+
+👉 Very useful in test automation assertions.
+
+-------------------------------
+
+3️⃣ toUpperCase() / toLowerCase() 
+let name = "PlayWright";
+
+console.log(name.toLowerCase()); // playwright
+console.log(name.toUpperCase()); // PLAYWRIGHT
+
+
+👉 Used for case-insensitive comparison.
+
+-------------------------------
+
+4️⃣ trim() / trimStart() / trimEnd() ⭐
+
+Very important for real projects.
+
+let userInput = "   Ravi   ";
+
+console.log(userInput.trim());      // "Ravi"
+console.log(userInput.trimStart()); // removes leading spaces
+console.log(userInput.trimEnd());   // removes trailing spaces
+
+
+👉 Used when validating form inputs.
+
+-------------------------------
+
+5️⃣ replace() ⭐
+
+Very important.
+
+let text = "Playwright is good";
+
+console.log(text.replace("good", "powerful"));
+// Playwright is powerful
+
+
+Important concept:
+
+let str = "test test test";
+console.log(str.replace("test", "run"));     // replaces first only //run test test
+console.log(str.replaceAll("test", "run"));  // replaces all //run run run
+
+-------------------------------
+
+6️⃣ split()  (You already used it in reverse )
+
+Explicitly:
+
+let sentence = "I love Playwright";
+
+console.log(sentence.split(" "));
+// ["I", "love", "Playwright"]
+
+
+👉 Used for:
+
+Parsing CSV
+
+Data extraction
+
+Tokenization
+
+-------------------------------
+
+7️⃣ lastIndexOf()
+let str = "Playwright";
+
+console.log(str.lastIndexOf("i")); 
+
+
+Finds last occurrence
