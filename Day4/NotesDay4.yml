@@ -1,0 +1,314 @@
+📑 Agenda for Week 2 Day 2 - Get Started with Playwright and Basic Locators 
+🎯 [ Focus: Learning Playwright Automation With Basic Locators For Precise Automation ]  
+
+📆 Date: 23 August [Sunday]  
+
+🕝 Session Highlights
+
+ Recap  
+* Key Takeaways from Week2 Day 1
+
+1. Understanding Playwright Architecture
+* Core Components and How They Interact  
+
+2. Browser, Context, and Page and Code Your First Test Script
+* Breaking Down the Key Concepts  
+* Understanding Playwright Config. File.
+* Real-life Use Cases in Automation  
+
+--------------BREAK----------------------
+
+--------------BREAKOUT-------------------
+
+3. Basic Locators CSS Selectors and Xpath Locators
+* Understanding the DOM
+* What is the DOM and How It Works   
+* Basic and Advanced CSS Selector Techniques.
+
+---------BREAKOUT--------------
+* Hands-on Example: Using CSS Selectors : ID, Class, and Attribute Selectors.
+
+* Hands-on Activity: Writing and Executing a Basic Script     
+
+🕡 Wrap Up / Q&A 
+
+📝 Keep your physical notebook and pen handy to sketch out ideas!
+
+
+------------------------------------------------------------------------
+
+CallBack function :
+
+⭐ The most important point
+
+When you write:
+
+playVideo(adv, showRelatedVideos);
+
+you are not executing adv or showRelatedVideos.
+
+You are passing their function references.
+
+That's why we use:
+
+adv
+
+instead of:
+
+adv()
+Difference
+playVideo(adv, showRelatedVideos);
+
+means:
+
+"Give these two functions to playVideo."
+
+Whereas:
+
+playVideo(adv(), showRelatedVideos());
+
+means:
+
+"Execute these functions first, and pass their return values to playVideo."
+
+That's a very important distinction when learning callback functions in JavaScript/TypeScript.
+
+----------------------------
+
+Difference between Playwright and latest Selenium Version 4.6+
+
+| Playwright                                   | Selenium Manager                                   |
+| -------------------------------------------- | -------------------------------------------------- |
+| Installs browsers if required                | Uses the browser already installed on your machine |
+| Downloads browser binaries                   | Downloads only the browser driver                  |
+| Manages browser versions                     | Manages only the driver version                    |
+| `npx playwright install` installs browsers   | Browser must already exist (in most cases)         |
+| Browser and framework are tightly integrated | Browser and Selenium are separate                  |
+
+---------------------------------------------------------------------------------------------------------
+
+Configuration file explanation :
+---------------------------------
+
+Before you execute your first playwright script follow below steps for better understanding of configuration file:
+
+1. change workers : undefined to 1     // line number 23 in config file
+2. headless:false // line number 33 after trace in config file
+3. projects : comment firefox and webkit // comment line number 43 to 51
+
+-----------------------------------------
+
+
+DOM Structure :
+--------------
+Document Object Model (DOM) is a programming interface for web documents. It represents the page so that programs can change the document structure, style, and content. The DOM represents the document as nodes and objects; that way, programming languages can interact with the page.
+
+<html>
+  <head>
+    <title>Testleaf Page</title>
+  </head>
+  <body>
+    <div>
+      <h1>Welcome to Testleaf</h1>
+      <p>This is a sample paragraph.</p>
+
+      <!-- Label and Textbox -->
+      <label for="username">Enter Name:</label>
+      <input type="text" id="username" name="username">
+
+    </div>
+  </body>
+</html>
+
+-------------------------------------------------------------------------------------
+What is a page fixture :
+------------------------
+In Playwright, a page fixture is a predefined setup that provides a fresh browser page for each test. 
+It ensures that tests run in isolation, preventing interference from previous tests. 
+The page fixture is part of Playwright's test runner and is automatically available in test functions.
+
+-------------------------------------------------------------------------------------
+
+Commonly used Commands :
+------------------------
+
+To create a playwright file - filename.spec.ts
+
+To run the test file - npx playwright test filename.spec.ts
+
+To open the test report - npx playwright show-report
+
+
+Default mode - headless
+
+
+
+Maximize Screen size in chromium : 
+--------------------------------
+
+  {
+      name: 'chromium',
+      use: { browserName:"chromium", 
+        viewport:null, // disable the deafult 1280x720
+        launchOptions:{
+          args:['--start-maximized'],
+        },
+      },
+    }, 
+
+
+
+Maximize Screen size in firefox : 
+--------------------------------
+
+     {
+      name: 'firefox',
+      use: { browserName:"firefox", 
+        viewport:{ width: 1920, height: 1080 }, // disable the deafult 1280x720
+        launchOptions:{
+          args:['--start-maximized'],
+        }
+}
+}
+
+
+--------------------------------------------
+
+-----------------------------------------------
+
+
+
+/// <reference types="node" /> tells TypeScript to include Node.js type definitions so things like process are recognized.
+
+🔹 Why you are getting error without it
+
+In your config, you’re using:
+
+process.env.CI
+
+👉 process is a Node.js global, not a browser/JS standard.
+
+TypeScript doesn’t automatically know about Node globals unless you tell it.
+
+So without this line:
+
+/// <reference types="node" />
+
+TypeScript thinks:
+❌ Cannot find name 'process'
+
+🔹 What this line actually does
+
+It pulls in types from:
+
+@types/node
+
+Which defines things like:
+
+process
+__dirname
+Buffer
+fs, path, etc.
+
+
+---
+
+npx playwright test fileName.spec.ts --project=firefox
+
+
+Conclusion:
+
+Priority of execution
+
+1. Script  : headless : true
+2. Terminal
+3. Configuration : headless : false
+
+
+
+-------------------------------
+
+NOTES- 23/08/2026:
+-------------------
+
+Requirements to test a browser application :
+
+1. Launch Browser.// chromium, firefox , webkit
+
+2. Load URL // Open the context(window) => Empty Page => which has below characteristics:
+
+a. it will open in an incognito like browser as well as 
+b. In an isolated enviroment => new Tab  {Example google profile were each profile has its on data which is not interlinked}
+
+
+3. Fill username and apssword and click login
+
+
+
+//Why playwright?
+
+1. Perfect documentation given by microsoft 
+2. Autowait mechanism : https://playwright.dev/docs/actionability
+3. Traceviwer : snap shot, network calls for each line of a playwright code
+4. Device Emulation
+5. Network Interception
+6. Geo Location
+7. Codegen => record and play generate a script as per our action
+
+
+
+
+Cookies : Storing the session information username and password in KB
+Cache : images, text in MB
+
+Playwright has a complete control of the chromedev tools :
+1. Element
+2. Console.
+3. Network
+4. Application
+----------------------------------------------------------------------------------------------------
+
+Develop and Execute a Script :
+
+In playwright we have to write all the test script(develop) with extension .spec.ts under "tests" folder.
+
+
+Three levels of execution :
+
+1. Through script
+2. Terminal
+3. Configuration
+
+
+    headless:true // headless means without UI // if headless is false means with UI
+
+
+Here the scenario 1 is 
+
+1. set in config
+headless:true // without UI
+
+2. set in script 
+headles:fasle // with UI
+
+
+Output:
+In the above scenario the script is going to take prioity
+
+Scenario 2 :
+
+When no input is given from script level
+
+1. In config we have set headless : true // without UI
+
+2. In terminal we have set npx playwright test 01-launchBrowser.spec.ts --headed // with UI
+
+Output :
+In the above scenario the terminal is going to take prioity
+
+
+Conclusion on priority:
+
+1. Script
+2. Terminal
+3. Config
