@@ -1,0 +1,426 @@
+
+📑 Agenda for Week 3 Day 1 -Handling Playwright Using Basic & Advanced Locator Strategies.
+🎯 [ Focus: Playwright Automation With Basic & Advanced Locators For Precise Automation ]   
+
+📆 Date: 29 August [Saturday]  
+
+🕝 Session Highlights
+
+ Recap  
+* Key Takeaways from Week2 Day 1
+
+1. CSS Selectors
+* Understanding the DOM
+* What is the DOM and How It Works   
+* Basic and Advanced CSS Selector Techniques.
+
+---------BREAK--------------
+
+---------BREAKOUT--------------
+* Hands-on Example: Using CSS Selectors : ID, Class, and Attribute Selectors.
+
+2. XPath Selectors
+* Relative vs. Absolute XPath: What's Better? 
+* Advanced relative Xpath- Axes  
+* Practical Use Cases with XPath Examples.
+
+* Live hands-on using relative xpath.
+
+* BREAK
+
+🕡 Wrap Up / Q&A 
+
+📝 Keep your physical notebook and pen handy to sketch out ideas!
+
+
+------------------------------------------------------------------------
+
+DOM Structure :
+--------------
+Document Object Model (DOM) is a programming interface for web documents. It represents the page so that programs can change the document structure, style, and content. The DOM represents the document as nodes and objects; that way, programming languages can interact with the page.
+
+<html>
+  <head>
+    <title>Testleaf Page</title>
+  </head>
+  <body>
+    <div>
+      <h1>Welcome to Testleaf</h1>
+      <p>This is a sample paragraph.</p>
+
+      <!-- Label and Textbox -->
+      <label for="username">Enter Name:</label>
+      <input id="username" name="username">
+
+    </div>
+  </body>
+</html>
+
+-------------------------------------------------------------------------------------
+
+CSS Selectors :
+-----------------
+1. By ID :
+Syntax : #idValue 
+Example : #username
+
+2. By Class :
+Syntax : .classValue
+Example : .inputLogin
+
+3. By Attribute :
+[tagName[attribute='value']]
+Example : input[id='username']
+
+4. Descendant Combinator 
+Example : form input
+
+5. Child Combinator
+Example : form > input
+
+-------------------------------------------------------------------------------------
+
+Playwright locator methods :
+----------------------------
+
+nth(), first(), and last() are Playwright Locator API methods.
+
+They help you choose which element to act on when a locator matches multiple elements.
+
+Strict Mode Violation Error :
+-----------------------------
+When a locator matches more than one element, Playwright throws an error to prevent ambiguity.
+To fix this, use nth(), first(), or last() to specify which element you want to interact with.
+
+-------------------------------------------------------------------------------------
+What is a page fixture :
+------------------------
+In Playwright, a page fixture is a predefined setup that provides a fresh browser page for each test. 
+It ensures that tests run in isolation, preventing interference from previous tests. 
+The page fixture is part of Playwright's test runner and is automatically available in test functions.
+
+-------------------------------------------------------------------------------------
+Classroom Activity :
+----------------------
+
+Write a Playwright script to perform the following actions on the Salesforce login page:
+1. Navigate to the Salesforce login page.
+2. Use different CSS selector strategies (ID, Class, Attribute) to locate the username and password fields.
+3. Enter sample credentials into the username and password fields.
+4. Click the login button using a CSS selector.
+5. Verify that the login was successful by checking for a specific element on the landing page.
+
+https://login.salesforce.com/?locale=in
+Sample credentials :
+Username:dilipkumar.rajendran@testleaf.com
+Password: TestLeaf@2025
+-------------------------------------------------
+
+Attribute priority :
+-----------------------
+1️⃣ aria-label – Accessibility-based, stable, first choice
+2️⃣ id – Unique, fast
+3️⃣ name – Usually stable, not always unique
+4️⃣ class – For styling, changes often → least reliable
+
+
+Commonly used Commands :
+------------------------
+
+To create a playwright file - filename.spec.ts
+
+To run the test file - npx playwright test filename.spec.ts
+
+To open the test report - npx playwright show-report
+
+
+Default mode - headless
+
+---
+
+How to Maximize Browser window ?
+
+Maximize Screen size in chromium : 
+--------------------------------
+
+  {
+      name: 'chromium',
+      use: { browserName:"chromium", 
+        viewport:null, // disable the deafult 1280x720
+        launchOptions:{
+          args:['--start-maximized'],
+        },
+      },
+    }, 
+
+
+
+Maximize Screen size in firefox : 
+--------------------------------
+
+     {
+      name: 'firefox',
+      use: { browserName:"firefox", 
+        viewport:{ width: 1920, height: 1080 }, // disable the deafult 1280x720
+        launchOptions:{
+          args:['--start-maximized'],
+        }
+}
+}
+
+
+--------------------------------------------
+
+
+Notes:
+------
+Xpath two types:
+
+1. Absolute Xpath
+2. Relative Xpath 
+
+-----------------------------------------------------------------------------
+
+Absolute Xpath :
+/html/body/div[2]/div[2]/div/form/p/input
+
+Relative Xpath :
+
+Two types :
+
+Basic Relative Xpath :
+
+//tagName[@attribute='attributeValue’] --> attribute based xpath
+//tagName[text()='text value in DOM']  --> text based xpath
+//tagName[contains(@attribute, 'Partial value of the attribute')] --> partial attribute based xpath
+//tagname[contains(text(),' Partial text in my DOM' ')] --> partial text based xpath
+(//tagName[@attribute='attributeValue'])[index] --> collection based xpath
+ 
+
+
+Advanced Relative Xpath Locators :
+--------------------------
+Parent To child   : 
+-----------------
+( parent relative xpath)/(tagName of child)
+
+(//form[@id="login"]/p)[3]
+
+
+GrandParent to child Relation   :
+--------------------------------
+GrandParent relative xpath//tagName of grand child
+
+(//form[@id="login"]//label)[2]
+
+--------------------------------------------------------
+
+Child to parent :      
+----------------
+Child relative xpath/parent::parent tagName --> //input[@id="username"]/parent::p
+
+//input[@id="username"]/parent::p
+
+Grandchild to grandparent :
+-----------------------------
+GrandChild relative xpath/ancestor::tagName of grand parent --> //input[@id="password"]/ancestor::p
+
+//label[text()="Username"]/ancestor::form
+
+---------------------------------------------------------------------------
+
+Elder sibling to younger sibling : (Top to Bottom)
+----------------------------------
+(Elder sibling relative xpath)/following-sibling::tagName of younger sibling --> //label[text()='Username']/following-sibling::input
+
+//label[text()="Username"]/following-sibling::input
+
+Younger sibling to Elder Sibling : (Bottom to Top)
+-----------------------------------
+(Younger sibling relative xpath)/preceding-sibling::tagName of elder sibling --> //input[@id='username']/preceding-sibling::label
+
+(//input[@id="username"]/preceding-sibling::label)
+
+
+------------------------------------------------------------
+
+
+Elder Cousin to Younger Cousin : (Top to Bottom)
+--------------------------------
+Elder cousing relative xpath/following::tagName of younger Cousin --> //input[@id="username"]/following::label
+
+//input[@id="username"]/following::input
+
+Younger Cousin to Elder Cousin: (Bottom to Top)
+-------------------------------
+Younger cousin xpath/preceding::tagName of Elder cousin --> //label[text()='Password']/preceding::input
+
+(//input[@class="decorativeSubmit"]/preceding::input)[1]
+
+---
+
+Compare CSS Sibling with Xpath
+--------------------------
+
+Immediate Sibling In CSS => "+" in xpath => (Elder sibling relative xpath)/following-sibling::tagName of younger sibling 
+
+Not immediate Sibling (Cousins) In CSS => "~" in xpath => (Elder sibling relative xpath)/following::tagName of younger sibling 
+
+
+
+
+
+
+
+
+Priority to choose an attribute from a DOM :
+
+1. aria-label
+2. id
+3. name
+4. class
+
+Advanced Relationship based CSS :
+--------------------------------
+
+
+1. Child Combinator (p>input) parent tag > child tag
+=> Immediate parent-child relationships
+
+
+2. Descendant Combinator (ancestorTag childTag) ==> form label 
+=> Not directly or immediatlet present parent-child relatiosnhip
+
+3. Adjancent Siblings : Immediate Sibling => meta+link
+
+
+4. Genaral Siblings : Not necessarily immediates sibling => meta~link
+-------------------------------------------------------------------------------------
+
+CSS                     | Xpath comparison :
+
+[id='username']       --> //tagname[@attribute='attributeValue’] => //input[@id='username']
+
+
+Parent-Child
+------------
+
+form>p              -->  //form[@id="login"]/p
+
+GrandParent - Child
+--------------------
+
+form label          ---> //form[@id="login"]//label
+
+
+Sibling Immediate Siblings
+--------------------------
+
+label+input        -->  //label[text()="Username"]/following-sibling::input
+
+General Sibling Not Immediate Siblings
+--------------------------
+
+
+
+
+
+------------------------------------------------------------------------------------------------
+
+Basic Relative Xpath :
+
+1. Attribute Based Xpath 
+
+Syntax :
+//tagname[@attribute='attributeValue’]  /// 
+
+//input[@id='username']
+
+
+2. Text Based Xpath // We will deal with visible text/ text that is visibile to the user (font colout black)
+
+Syntax :
+//tagName[text()='text value in DOM']
+
+//label[text()="Username"]
+
+
+3. Parital Attribute Based Xpath
+
+We go for parital attribute based Xpath when the attribute value is lengthy
+
+//tagName[contains(@attribute, 'Partial value of the attribute')]
+
+//input[contains(@id, 'user')]
+
+
+4. Parital Text Based Xpath
+
+We go for parital text based Xpath when the text value is lengthy or has white space
+
+//tagname[contains(text(),' Partial text in my DOM' ')]
+
+//a[contains(text(),'SF')]
+
+
+
+5. Collection Based Xpath // Index Based Xpath
+
+(//input[@class="inputLogin"])[2]
+
+-------------------------------------------------------------
+
+
+Advanced Relative Xpath :
+-----------------------
+
+1.a. Parent - Child Relationship (Top to Bottom)
+
+( parent realtive xpath)/(tagName of child) 
+
+//form[@id="login"]/p
+
+
+1.b. Child - Parent Relationship (Bottom to top) ( Note this traversing from bottom to top is not possible in CSS)
+
+Child relative xpath/parent::parent tagName
+
+//input[@id="username"]/parent::p
+
+------------------------------------
+
+2.a. GrandParent - Child Rleationship (Top to Bottom)
+
+//form[@id="login"]//label
+
+2.b. GrandChild to GrandParent Relationship
+
+GrandChild relative xpath/ancestor::tagName of grand parent
+
+//input[@id="username"]/ancestor::div
+
+------------------------------------
+
+3. Siblings Relationship
+
+
+3.a.Elder Sibling to Younger Sibling  (Top to bottom)
+
+//label[text()="Username"]/following-sibling::input
+
+
+3.b. Younger Sibing to Elder Sibling (Bottom to top)
+
+
+//input[@id="username"]/preceding-sibling::label
+
+
+4.a.Elder Cosuin  to Younger Cousin  (Top to bottom)
+
+//label[text()="Username"]/following::input
+
+
+4.b. Younger Cousin to Elder Cousin (Bottom to top)
+
+
+ //input[@class="decorativeSubmit"]/preceding::input[@id="password"]
