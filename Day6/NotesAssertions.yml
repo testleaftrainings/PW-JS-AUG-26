@@ -1,0 +1,251 @@
+Generic Assertions : 
+------------------
+
+Generic Assertions are used to validate simple values, variables, calculations, API response fields, boolean conditions, etc.
+These are immediate checks (non-retry) and do NOT depend on UI elements.
+
+Use cases:
+---------
+Comparing numbers
+Comparing strings
+Checking boolean results
+Validating object values
+Checking array lengths
+Validating API response data
+
+✅ Common Generic Assertions
+
+1. toBe()
+
+Checks strict equality (number, boolean, etc.)
+
+expect(status).toBe("assigned");
+expect(isLoggedIn).toBe(true);
+
+2. toEqual()
+
+Checks value equality for objects or arrays
+
+expect([1, 2]).toEqual([1, 2]);
+expect({a: 1}).toEqual({a: 1});
+
+3. toBeTruthy()
+
+Passes if the value is any “truthy” value.
+
+expect("hello").toBeTruthy();
+expect(1).toBeTruthy();
+
+4. toBeFalsy()
+
+Passes if the value is “falsy”.
+Falsy values: 0, null, undefined, false, “”
+
+expect("").toBeFalsy();
+expect(0).toBeFalsy();
+
+5. toBeGreaterThan()
+
+Checks if a number is greater than another.
+
+expect(10).toBeGreaterThan(5);
+
+6. toBeLessThan()
+
+Checks if a number is less than another.
+
+expect(3).toBeLessThan(10);
+
+7. toBeGreaterThanOrEqual() / toBeLessThanOrEqual()
+
+Useful for ranges.
+
+8. toContain()
+
+Checks if an array or string contains something.
+
+expect([1,2,3]).toContain(2);
+expect("playwright").toContain("write");
+
+9. toMatch()
+
+Matches a string using a regex pattern.
+
+expect("Welcome123").toMatch(/Welcome/);
+
+10. toBeNull() / toBeDefined() / toBeUndefined()
+
+State checks.
+
+expect(value).toBeNull();
+expect(name).toBeDefined();
+
+
+ Generic Assertions = JavaScript value checks
+ Locator Assertions = UI element checks
+
+Summarize :
+
+Generic assertions do not auto-retry, unlike locator assertions.
+
+
+
+
+---------------------------------------------------------
+
+
+Locator Assertions:
+-----------------------
+
+Locator Assertions are used to validate the state, visibility, text, attributes, and behavior of UI elements in the webpage.
+
+These assertions are performed on elements identified using locators such as:
+page.locator(), getByRole(), getByText(), etc.
+
+Locator assertions AUTO-RETRY, meaning Playwright keeps checking the condition until it becomes true or times out.
+This makes them very reliable for dynamic UI.
+
+Use Cases of Locator Assertions 
+-------------------------------
+
+Locator Assertions are used for:
+
+- Checking visibility of elements
+
+- Verifying buttons are enabled/disabled
+
+- Validating text content
+
+- Checking input field values
+
+- Ensuring elements appear/disappear
+
+- Counting number of elements
+
+Validating element attributes (e.g., type, href)
+
+Common Locator Assertions
+--------------------------
+
+1. toBeVisible()
+
+Checks that the element is visible on the page.
+
+await expect(locator).toBeVisible();
+
+2. toBeHidden()
+
+Checks that the element is present but not visible.
+
+await expect(locator).toBeHidden();
+
+3. toBeEnabled()
+
+Checks if the element is enabled and interactive.
+
+await expect(button).toBeEnabled();
+
+4. toBeDisabled()
+
+Checks if the element is disabled (cannot be clicked or typed into).
+
+await expect(button).toBeDisabled();
+
+5. toBeEditable()
+
+Checks if an input field is editable by the user.
+
+await expect(input).toBeEditable();
+
+6. toHaveText()
+
+Checks for exact match of text inside an element.
+
+await expect(locator).toHaveText("Login Successful");
+
+7. toContainText()
+
+Checks if the element contains partial text (substring).
+
+await expect(locator).toContainText("Success");
+
+8. toHaveValue()
+
+Checks the value of input elements (textbox, textarea).
+
+await expect(input).toHaveValue("Testleaf");
+
+9. toHaveAttribute()
+
+Checks if an element has a specific attribute.
+
+await expect(link).toHaveAttribute("href", "/dashboard");
+
+10. toHaveCount()
+
+Checks how many elements match the locator.
+
+await expect(locator).toHaveCount(5);
+
+11. toBeChecked() / toBeUnchecked()
+
+Used for checkboxes, radio buttons, switches.
+
+await expect(checkbox).toBeChecked();
+
+
+Examples:
+
+✔ Check if the login button is visible
+✔ Verify the error message contains correct text
+✔ Validate username field is editable
+✔ Ensure product list displays 10 items
+✔ Check the checkbox is selected after clicking it
+
+
+To summarize on locator assertions:
+
+Locator assertions auto-retry because UI loads dynamically.
+This is why they are more stable in automation.
+
+------------------------------------------------------------------------
+
+page assertions :
+---------------
+
+The PageAssertions class provides assertion methods that can be used to make assertions about the Page state in the tests.
+
+toHaveURL :
+----------
+
+// Check for the page URL to be 'https://playwright.dev/docs/intro' (including query string)
+
+await expect(page).toHaveURL('https://playwright.dev/docs/intro');
+Ensures the page is navigated to the given URL.
+
+
+toHaveTitle
+-----------
+Ensures the page has the given title.
+
+Usage
+
+await expect(page).toHaveTitle(/.*checkout/);
+
+
+ toHaveScreenshot(options)
+---------------------------
+
+This function will wait until two consecutive page screenshots yield the same result, and then compare the last screenshot with the expectation.
+
+The snapshot is stored in the PNG format. To store it in the WebP format instead, pass a snapshot name with the .webp extension.
+
+Usage
+
+await expect(page).toHaveScreenshot();
+
+
+Summary:
+
+ Generic Assertions = value checks
+ Locator Assertions = UI element checks

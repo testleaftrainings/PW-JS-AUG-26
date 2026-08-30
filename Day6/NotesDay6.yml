@@ -1,0 +1,507 @@
+📑 Agenda for Week 3 Day 2 -
+Learn To Handle Dropdowns, Assertions, Playwright Locators and Frames
+🎯 [ Focus: Mastering the features of Playwright Locators, Dropdown, Assertions and Frames concepts]  
+
+1. Handling Dropdowns  
+* Understanding dropdown types: 'select' tags and custom dropdowns.  
+* Selecting options by value, label, or index.
+
+* BREAKOUT 1 : Hands-on Example: Handling Dropdowns in leaftaps lead creation.
+
+2. Assertions Using the 'expect' Library  
+* Commonly used assertions and their applications. 
+-->Classroom Activity in Asserions.
+
+3. Playwright's getBy Locators
+* Explore getByText, getByRole, getByLabel, and more.  
+* Accessibility-first Automation with getBy Methods.  
+* Real-time Activity: Automating a Login Form in Salesforce Application.
+
+4. Interaction with Frames
+* Understanding the concept of iframes in web applications.  
+* Navigating into and interacting with elements inside frames.
+
+----------------------------------------------------------------------------------
+Notes :
+---
+
+Select options used based on priority:
+-----------------------------------------
+
+1. Select By Value :
+-Stable and less likely to change since the value is often connected to your backend
+
+  await page.selectOption(`#createLeadForm_dataSourceId`,{value:"LEAD_DIRECTMAIL"})
+
+2. Select By Label :
+Tend to change due to business requirements / geography
+Example travel name of places in your website
+
+3. Select BY Index :
+When ever there is not change in the order of your dropdown can go for select by index 
+
+Non-select tags
+---------------
+1. Locate your dropdown and use click()/ enter the value
+2. locate the particular option from the dropdownlist - clickit
+
+
+
+Ways of handling dropdown:
+----------------------------
+
+| Method     | Stability | Readability | Use When...                         |
+| ---------- | --------- | ----------- | ----------------------------------- |
+| By value |   High    |   Low       | Most reliable, backend-driven IDs   |
+| By label |   Medium  |   High      | UI is stable or for quick checks    |
+| By index |   Low     |   Low       | Only if no other way /static order |
+
+-------------------------------------------------------------------------------------
+
+Mutiple Dropdown Interaction :
+------------------------------
+
+1. Selecting multiple values from a multi-select dropdown
+
+If the HTML is:
+
+<select id="skills" multiple>
+  <option value="java">Java</option>
+  <option value="python">Python</option>
+  <option value="playwright">Playwright</option>
+</select>
+
+You can select multiple options in one statement:
+
+await page.locator('#skills').selectOption([
+  'java',
+  'python',
+  'playwright'
+]);
+
+You can also use:
+
+await page.locator('#skills').selectOption([
+  { label: 'Java' },
+  { label: 'Python' }
+]);
+
+----------
+
+3. Multiple custom dropdowns
+
+This is very common in real applications. For example:
+
+Country       [India ▼]
+State         [Tamil Nadu ▼]
+City          [Chennai ▼]
+
+These may not be <select> elements. They could be <div>, <button>, <li>, etc.
+
+Example:
+
+await page.getByRole('combobox', { name: 'Country' }).click();
+await page.getByRole('option', { name: 'India' }).click();
+
+await page.getByRole('combobox', { name: 'State' }).click();
+await page.getByRole('option', { name: 'Tamil Nadu' }).click();
+
+await page.getByRole('combobox', { name: 'City' }).click();
+await page.getByRole('option', { name: 'Chennai' }).click();
+
+The important point is that you cannot blindly use selectOption() for custom dropdowns. selectOption() works with a native HTML <select>.
+
+------------------
+
+4. Handling many dropdowns using a loop
+
+If you have several native dropdowns:
+
+const dropdowns = page.locator('select');
+
+const values = ['India', 'Tamil Nadu', 'Chennai'];
+
+for (let i = 0; i < values.length; i++) {
+    await dropdowns.nth(i).selectOption(values[i]);
+}
+
+Or, if each dropdown has a different locator:
+
+const dropdowns = [
+    { locator: '#country', value: 'India' },
+    { locator: '#state', value: 'Tamil Nadu' },
+    { locator: '#city', value: 'Chennai' }
+];
+
+for (const dropdown of dropdowns) {
+    await page.locator(dropdown.locator)
+               .selectOption({ label: dropdown.value });
+}
+
+----------------------------------------------------------------------------------
+
+
+Playwright Assertions :
+-----------
+Use expect() library for assertions
+
+expect library meaning - to expect something
+
+5 types of Assertions in Playwright:
+--------------------------------------
+
+1. Generic Assertion.
+
+Assertions on variables or values, not directly tied to UI elements.
+
+toBe – Checks strict equality (===) between two values.
+toEqual – Checks deep equality of objects/arrays/values.
+toContain – Checks whether a value/substring exists inside an array/string.
+toBeTruthy – Passes if the value is considered true in JavaScript.
+toBeFalsy – Passes if the value is considered false in JavaScript.
+toBeGreaterThan – Checks if a number is greater than another number.
+
+
+2. Locator Assertion.
+Assertions performed on UI elements indentified using locators
+
+- toBeVisible()- checks if the element is visible on the page.
+- toBeEnabled()- checks if the element is enabled and can be interacted with.
+- toBeEditable()- checks if the element is editable, such as input fields.
+
+3. Page Assertion.
+
+Assertions made on the page object , such as URL and title.
+
+toHaveURL(url) - checks if the current page URL matches the expected URL.
+
+    expect(page).toHaveURL("https://leaftaps.com/opentaps/control/main");
+
+toHaveTitle() - checks if the page title matches the expected title.
+
+    expect(page).toHaveTitle("Leaftaps - TestLeaf Automation Platform");
+
+
+toHaveScreenshot() - This function will wait until two consecutive page screenshots yield the same result, and then compare the last screenshot with the expectation.
+                      The snapshot is stored in the PNG format. To store it in the WebP format instead, pass a snapshot name with the .webp extension.
+
+    await page.screenshot({path:"Data/leaftaps.png"})
+    expect(page).toHaveScreenshot("leaftaps.png")
+
+
+4. Snapshot Assertions. --> Visual Regression testing
+Assertions comparing two visual elments from the UI particular
+
+5. API refernce Assertions. --> REST API 
+Assertions used check your API reponses 
+
+
+Based on Functionality 
+--------------------
+
+1. Auto retry assertion.
+2. Non-retry assetion.
+
+
+Hard Assertion.--> It will abruptly stop your execution.
+Soft Assertion. --> Informing that he assertion has failed and it will not stop execution it will move to next  part of execution.
+
+
+Negating matchers
+
+In general, we can expect the opposite to be true by adding a .not to the front of the matchers:
+
+expect(value).not.toEqual(0);
+await expect(locator).not.toContainText('some text');
+
+-------------------------------------------------------------------------------------
+
+/* 📝 Assignment Requirements
+
+Write a Playwright test that performs the following steps:
+
+🔹 Part 1: Navigate to the page
+
+Launch Playwright test.
+
+Navigate to the page:
+https://leafground.com/input.xhtml
+
+🔹 Part 2: Validate a Disabled Textbox
+
+Locate the textbox with placeholder "Disabled".
+
+Assert that it is disabled using:
+await expect(locator).toBeDisabled()
+
+🔹 Part 3: Validate an Enabled Textbox
+
+Locate another textbox (example: the one with placeholder "Type your name").
+
+Assert that it is enabled using:
+await expect(locator).toBeEditable()
+
+Type your name into the textbox.
+
+🔹 Part 4: Soft Assertion Practice
+
+Pick a textbox that is not disabled.
+
+Use:
+await expect.soft(locator).toBeDisabled()
+
+Observe the test result and understand how soft assertions behave.
+
+🔹 Part 5: Fill Data
+
+Choose a textbox (any enabled one).
+
+Clear existing text using .fill()
+
+Enter a new value (Ex: "Playwright Learning")
+ */
+
+----------------------------------------------------------------------------------------
+
+timeouts in playwright :
+----------------------
+
+1. test timeout:
+-----------------
+Timeout for a specific test execution.
+
+test.setTimeout(20000)
+
+2. assertion timeout:
+----------------------
+Timeout for assertion of a weblelement.
+
+In config file below timeout :
+expect:{
+timeout:15000
+}
+
+In script : 
+await expect(locator).toHaveText('Submit',{timeout:15000})
+
+3. Action timeout :
+--------------------
+Timeout for each and every action performed like click(), fill()
+
+In config mention under "use" :
+use:{
+actionTimeout:15000
+}
+
+In script : 
+await page.locator("#password").fill("crmsfa",{timeout:20000})
+
+4. GLobal timeout :
+-----------------------
+Implemented when we execute in pipleines.
+
+In config file under "timeout" :
+
+globalTimout : 60*60*1000
+
+----------------
+
+Easy way to remember :
+
+Global timeout
+      ↓
+Entire test run
+      ↓
+Test timeout
+      ↓
+Individual test
+      ↓
+Action timeout / Assertion timeout
+      ↓
+Individual operation/assertion
+
+------------------------------------------------------------------------------------
+In **Playwright**, both **`innerText()`** and **`textContent()`** are used to get text from elements, but they behave differently — similar to how they work in the browser DOM.
+
+Here’s a clear comparison:
+
+---
+
+## ✅ 1. `innerText()`
+
+### ✔ What it does
+
+* Returns **visible text only**
+* Respects **CSS styles**
+* Ignores hidden elements
+* Similar to what a **user sees on screen**
+
+### ✔ Example
+
+```ts
+const text = await page.locator('#message').innerText();
+console.log(text);
+```
+
+### ✔ If HTML is:
+
+```html
+<div id="message">
+  Hello
+  <span style="display:none">Secret</span>
+</div>
+```
+
+### ✔ Output
+
+```
+Hello
+```
+
+Hidden text is ignored.
+
+---
+
+## ✅ 2. `textContent()`
+
+### ✔ What it does
+
+* Returns **all text**
+* Includes hidden elements
+* Does NOT consider CSS
+* Faster than `innerText()`
+
+### ✔ Example
+
+```ts
+const text = await page.locator('#message').textContent();
+console.log(text);
+```
+
+### ✔ Output
+
+```
+Hello Secret
+```
+
+Hidden text is included.
+
+---
+
+## ✅ Key Differences
+
+| Feature              | innerText() | textContent() |
+| -------------------- | ----------- | ------------- |
+| Visible text only    | ✅ Yes       | ❌ No          |
+| Includes hidden text | ❌ No        | ✅ Yes         |
+| Respects CSS         | ✅ Yes       | ❌ No          |
+| Matches user view    | ✅ Yes       | ❌ No          |
+| Performance          | Slower      | Faster        |
+
+---
+
+## ✅ Best Practice in Playwright
+
+### ✔ Use `innerText()` when:
+
+* Testing UI text
+* Verifying what user sees
+
+Example:
+
+```ts
+await expect(page.locator('#status')).toHaveText('Success');
+```
+
+This internally behaves like **innerText()**.
+
+---
+
+### ✔ Use `textContent()` when:
+
+* Need raw HTML text
+* Hidden text matters
+* Performance important
+
+Example:
+
+```ts
+const rawText = await locator.textContent();
+```
+
+---
+
+## ✅ Easy Way to Remember
+
+**innerText → "Inside Screen"**
+👉 What user **sees**
+
+**textContent → "Total Content"**
+👉 Everything in DOM
+
+--------------------------------------------------
+Classroom Activity :
+----------------------
+
+Write a Playwright script to perform the following actions on the Salesforce login page:
+1. Navigate to the Salesforce login page.
+2. Use different playwright locator strategies to locate the username and password fields.
+3. Enter sample credentials into the username and password fields.
+4. Click the login button using a playwright locator.
+5. Verify that the login was successful by checking for a specific element on the landing page.
+
+URL:https://login.salesforce.com/
+Sample credentials :
+Username:dilipkumar.rajendran@testleaf.com
+Password: TestLeaf@2025
+
+
+--------------------------------------------------
+Notes:
+-----
+Use below command to view browser in full screen:
+--------------------------------------------------
+
+{
+      name: 'chromium',
+      use: { browserName:"chromium", 
+        viewport:null, // disable the deafult 1280x720
+        launchOptions:{
+          args:['--start-maximized'],
+        },
+      },
+    }, 
+
+    Firefox :
+    ----------
+
+        name: 'firefox',
+      use: { browserName:"firefox", 
+        viewport:{ width: 1920, height: 1080 }, // disable the deafult 1280x720
+        launchOptions:{
+          args:['--start-maximized'],
+        }
+}
+}
+
+
+-------------------------------------------------------------------------
+
+Playwright Locators :
+--------------------
+
+1. getByRole()
+2. getByText()
+3. getByLabel()
+4. getByPlaceholder()
+5. getByTitle()
+6. getByAltText()
+7. getByTestId()
+
+-------------------------------------------------------------------------------
+
+
+Assertions Types :
+
+1. Locator Assertions => auto retry assertions.
+2. Generic Assertiosn => Non retry assertions.
