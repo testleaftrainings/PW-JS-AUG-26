@@ -1,0 +1,594 @@
+📑 Agenda for Week 4 Day 1: Handling Frames, Alerts & Windows in Playwright 
+🎯 [Focus: Understanding how to interact with frames, alerts and windows]   
+
+📆 Date: 05 Sep. [Saturday]  
+
+🕝 Session Highlights
+
+Recap
+* Quick review of key learnings from previous sessions. 
+
+1. Storage State:
+* Understanding the concept of skipping the login using storage state in web applications.  
+
+2. Interaction with Frames
+* Understanding the concept of iframes in web applications.  
+* Navigating into and interacting with elements inside frames.
+
+3. Alerts Handling
+* Understanding Playwright’s support for JavaScript alerts, prompts, and confirmations.  
+* Automating acceptance or dismissal of alerts.  
+
+4. Handling Multiple Windows / Tabs  
+* Managing multiple windows or tabs in Playwright.  
+* Switching between windows and tabs efficiently.  
+
+
+🕡 Wrap Up / Q&A  
+
+📝 Keep your physical notebook and pen handy to sketch out ideas!
+
+------------------------------------------------------------------------------------------------
+
+Notes :
+-------
+Storage State:
+--------------
+Storage State in Playwright is a saved snapshot of a browser's authenticated session. 
+It stores cookies, local storage, and session storage so that we can reuse a logged-in session instead of performing the login steps before every test. 
+This makes test execution faster, more reliable, and avoids repeated authentication.
+
+
+Ways to use storage state in Playwright:
+
+In Playwright, you can configure a **storage state** globally in your `playwright.config.ts` so that all tests start with a logged-in session.
+
+## Option 1: Global storageState (Most Common)
+
+```typescript
+// playwright.config.ts
+
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  use: {
+    baseURL: 'https://testleaf22-dev-ed.develop.my.salesforce-setup.com/',
+    browserName: 'chromium',
+    headless: false,
+
+    // Load the saved login session
+    storageState: 'Data/login_salesforce.json',
+  },
+});
+```
+
+Now every test automatically uses the login session stored in `playwright/.auth/user.json`.
+
+---
+
+## Step 2: Generate the storage state
+
+Create a setup script.
+
+```typescript
+// auth.setup.ts
+
+import { test as setup } from '@playwright/test';
+
+setup('authenticate', async ({ page }) => {
+  await page.goto('https://login.salesforce.com/?locale=in');
+
+  await page.fill('#username', 'admin');
+  await page.fill('#password', 'password');
+
+  await page.click('button[type="submit"]');
+
+  await page.waitForURL('**/dashboard');
+
+  await page.context().storageState({
+    path: 'playwright/.auth/user.json',
+  });
+});
+```
+
+Run it once:
+
+```bash
+npx playwright test auth.setup.ts
+```
+
+---
+
+## Option 2: Using Playwright Projects (Recommended)
+
+This is the approach recommended by Playwright because the login is regenerated automatically before your tests.
+
+```typescript
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  projects: [
+    {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
+      name: 'chromium',
+      use: {
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+    },
+  ],
+});
+```
+
+Here:
+
+* `setup` project performs the login.
+* It saves `user.json`.
+* The `chromium` project waits for `setup` to finish and then uses the saved session.
+
+---
+
+## Option 3: Different storage states for different user roles
+
+```typescript
+projects: [
+  {
+    name: 'admin',
+    use: {
+      storageState: 'playwright/.auth/admin.json',
+    },
+  },
+  {
+    name: 'manager',
+    use: {
+      storageState: 'playwright/.auth/manager.json',
+    },
+  },
+  {
+    name: 'customer',
+    use: {
+      storageState: 'playwright/.auth/customer.json',
+    },
+  },
+];
+```
+
+Then run:
+
+```bash
+npx playwright test --project=admin
+```
+
+or
+
+```bash
+npx playwright test --project=manager
+```
+
+---
+
+## Option 4: Override storage state for a specific test
+
+Even if the config has a default storage state, you can override it:
+
+```typescript
+import { test } from '@playwright/test';
+
+test.use({
+  storageState: 'playwright/.auth/admin.json',
+});
+
+test('Admin test', async ({ page }) => {
+  await page.goto('/');
+});
+```
+
+---
+
+### Recommended folder structure
+
+```
+project
+│
+├── playwright.config.ts
+├── tests
+│   ├── auth.setup.ts
+│   ├── dashboard.spec.ts
+│   └── users.spec.ts
+│
+└── playwright
+    └── .auth
+        ├── user.json
+        ├── admin.json
+        └── manager.json
+---------------------------------------------------------------------------------
+
+Frames :
+-------
+
+Definition: An HTML document embedded inside another document using an <iframe> tag. Playwright allows direct interaction with elements inside frames.
+
+Usage: Useful for automating pages that load content inside frames or nested frames.
+
+Syntax:
+
+page.frames()-> frames() method helps to get the collection of frames that is present in a webpage.
+
+page.frame({ name | url }) → Gets the frame object to interact with.
+
+------------------------------------------------------------------------------------------------
+
+Modern Playwright frame interaction method:
+--------------------------------------------
+
+page.frameLocator(selector) → Locates elements inside a frame (recommended).
+
+-------------------------------------------------------------------------------------------
+
+| Feature       | `frame()`     | `frameLocator()` |
+| ------------- | ------------- | ---------------- |
+| Return type   | Frame or null | Locator-like     |
+| Auto wait     | ❌ No          | ✅ Yes            |
+| Nested frames |   Hard       | ✅ Easy           |
+| Stability     | ❌ Less        | ✅ More           |
+| Recommended   | ❌ Old style   | ✅ Best practice  |
+
+
+
+---------------------------------------------------------
+
+Used in legacy Application :
+-----------------
+page.frame({ name | url | index }) → Gets the frame object to interact with.
+
+1. ?. (Optional Chaining ⭐)
+
+This is the important part
+
+frameURL?.locator("")
+?. means:
+👉 “Only continue if frameURL is NOT null or undefined”
+Without ?.
+frameURL.locator("")
+
+❌ If frameURL is null → error (crash)
+
+With ?.
+frameURL?.locator("")
+
+✅ If frameURL is null → it safely skips (no error)
+
+--------------------------------------------------------------------------
+
+
+Example sites :
+
+https://developer.servicenow.com/dev.do
+
+https://www.w3schools.com/html/html_iframe.asp
+
+https://the-internet.herokuapp.com/iframe
+
+https://www.oneindia.com/ 
+
+---------------------------------------------------------------------------------
+Extra leanrings :
+---------------
+const title = await frame.evaluate(() => document.title);
+
+1. evaluate()
+A Playwright method
+Used to run JavaScript inside the browser
+Works on:
+page
+frame
+2. () => document.title
+
+This is a function executed inside the browser
+
+document → represents the webpage DOM
+document.title → gets the page title
+
+👉 Same as writing in browser console:
+
+document.title
+🔄 What actually happens behind the scenes
+const title = await frame.evaluate(() => document.title);
+Step-by-step:
+Playwright goes inside the frame
+
+Runs:
+
+document.title
+Gets the result (string)
+Sends it back to your test
+Stores it in title
+
+------------------------------------------------------------------------
+
+What is frameContent() in Playwright?
+
+frameContent() is used to get the complete HTML content of an iframe.
+
+👉 It returns the entire DOM (HTML) inside the frame as a string.
+
+Think of it like:
+
+“Show me the full HTML inside this iframe.”
+-----------------
+Why do we use this in real automation?
+
+Use cases:
+
+1️⃣ Debugging iframe issues
+
+console.log(await frame.frameContent());
+
+You can see what elements exist inside the frame.
+
+2️⃣ Check dynamic HTML loaded inside frame
+
+const html = await frame.frameContent();
+
+expect(html).toContain("Login");
+
+3️⃣ Understand DOM structure inside iframe
+
+Useful when the frame is loaded dynamically by JS.
+
+-----------------------------------------------------------------------------
+
+
+Reason for the difference in frames shown in DevTools vs Playwright:
+--------------------------------------------------------------------
+
+DevTools shows all DOM iframes (even hidden, detached, ad trackers).
+
+Playwright only shows active, attached frames that the browser can script against.
+
+Below code you can get the frames present in DOM :
+
+import { test } from "@playwright/test";
+
+test("Compare iframe count - DOM vs Playwright", async ({ page }) => {
+  await page.goto("https://www.oneindia.com/");
+
+  // wait for ads & trackers to load
+  await page.waitForTimeout(5000);
+
+  // 1. Count iframes using DOM query (same as DevTools)
+  const domIframes = await page.evaluate(() => {
+    return document.querySelectorAll("iframe").length;
+  });
+
+  // 2. Count frames using Playwright API
+  const pwFrames = page.frames();
+
+  console.log("DOM iframes (DevTools style):", domIframes);
+  console.log("Playwright frames (API style):", pwFrames.length);
+
+  // Print first few frame URLs
+  console.log("\n--- Playwright Frames ---");
+  pwFrames.slice(0, 10).forEach((frame, idx) => {
+    console.log(idx + 1, ":", frame.url());
+  });
+});
+
+---------------------------------------------------------------------------
+
+Classroom Activity:
+------------------
+
+Get the title of all the frames present in service now application :
+
+https://developer.servicenow.com/dev.do
+
+---------------------------------------------------------------------------
+
+Use filter() only when:
+
+1. multiple similar containers exist
+
+2. and you must scope inside one specific block
+
+---------------------------------------------------------------------------
+
+Alerts /Dialogs:
+---------------
+
+Definition: Browser pop-ups such as alert, confirm, prompt, or beforeunload triggered by JavaScript.
+
+Usage: Intercept and handle dialog events to read their message and accept or dismiss them.
+
+Syntax:
+
+page.on('dialog', async dialog => { ... }) → Listen and handle.
+
+await dialog.accept([promptText]) → Accept dialog (optionally providing input for prompts).
+
+await dialog.dismiss() → Cancel dialog.
+
+Event Listeners
+--------------
+Definition: You subscribe to an event via Playwright's event emitter system.
+
+Usage: Allows multiple listeners for the same event. No overwriting — all registered callbacks run.
+
+Syntax: page.on(eventName, callback) or page.once(eventName, callback)
+
+
+------------------------------------------------------------------------------------
+
+✅ What does page.on() mean?
+
+Think of page.on() like:
+
+“Hey Playwright, listen to this page. If something happens, tell me!”
+
+So this part:
+
+page.on(...)
+
+
+means:
+
+👉 Attach a listener to the page for some event.
+
+✅ What is 'dialog'?
+'dialog'
+
+
+This means:
+
+🔔 “I want to be notified whenever an alert box / confirm / prompt appears on this page.”
+
+In browsers, these are called JavaScript dialogs:
+
+alert()
+
+confirm()
+
+prompt()
+
+So:
+
+page.on('dialog', ...)
+
+
+means:
+
+✅ Whenever any alert, confirm, or prompt appears → run this code.
+
+✅ What is async (alert) => { ... }
+
+This is an arrow function (callback function).
+
+It means:
+
+ “When a dialog appears, Playwright will give me that dialog object in the variable called alert.”
+
+So:
+
+async (alert) => {
+
+
+means:
+
+- This function runs automatically
+- alert contains the popup box
+- async is used because:
+
+We use await alert.dismiss() inside it
+
+---------------------------------------------------------------------------------------
+
+✅ Use page.on() when:
+
+App shows multiple alerts
+
+You want to log all console messages
+
+Handling repeated events
+
+✅ Use page.once() when:
+
+Only one alert is expected
+
+Only one popup or tab
+
+Avoid accidental double handling
+
+⚠️ Common mistake
+
+Using page.on() for a single alert can cause:
+
+Multiple accepts
+
+Test flakiness
+
+Unexpected failures
+
+
+-------------------------------------------------------------------------
+
+Question:
+
+Write a Playwright test to demonstrate handling JavaScript alerts using page.on():
+
+1. Launch any banking website- Ope nBank of India Banking page - https://bankofindia.bank.in/
+2. Click on the Net Banking link right top corner.
+3. Click on Login Button besides the Corporate (Old) label from the dropdown..
+4. Print the alert message and type.
+5. Accept or dismiss the alert based on its type.
+
+----------------------------------------------------------------------------------------
+
+
+Playwright Challenges :
+------------------------
+
+1. Normal Click Not Working
+Challenge:
+locator.click() sometimes fails due to overlays, hidden, or detached elements.
+Fix:
+Used locator.scrollIntoViewIfNeeded() or force: true.
+Added checks like locator.isVisible() before clicking.
+
+2. Timeout and Synchronization Issues
+Challenge:
+Auto-wait is powerful but can still hit timeouts if network or animation delays occur.
+Resolution:
+Increased default timeout (page.setDefaultTimeout()).
+Implemented retry logic for dynamic components.
+
+3. Execution Speed & Stability
+Challenge:
+Playwright executes much faster — can cause sync issues with backend or network.
+Fix:
+Added necessary waits for API calls or navigation.
+Used tracing (context.tracing.start()) to debug flaky tests.
+
+4. Dropdown Issue :
+Something looks like dropdown but not a dropdown, it took some tiem for the dropdown to gte loaded.
+Fix :
+Wrote a custom "type" method after filling we waited for teh dropdown to get populated we confirmed the value and selected the dropdown.
+Element specific implementation.
+
+
+----------------------------------------------
+1. Handle Browser Location Permission Popup
+
+Best practice:
+Grant permission before opening the page.
+
+import { test, expect } from '@playwright/test';
+
+test('Handle popups', async ({ browser }) => {
+
+  // Browser context
+  const context = await browser.newContext({
+    permissions: ['geolocation'],
+    geolocation: {
+      latitude: 13.0827,
+      longitude: 80.2707
+    }
+  });
+
+  const page = await context.newPage();
+
+  await page.goto('https://developer.servicenow.com');
+
+/*2. Handle Cookie Policy Popup (Bottom Popup)
+
+This is a normal HTML element.
+So we use locator. */
+
+  // Handle cookie popup
+  await page.getByRole('button', {
+    name: 'Accept and Proceed'
+  }).click();
+
+});
