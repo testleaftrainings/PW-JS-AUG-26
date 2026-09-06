@@ -1,0 +1,280 @@
+Playwright Window Handling Notes:
+---
+
+## 1️⃣ What is the problem with sequential approach of window handling?
+
+👉 Clicking **MOTOROLA g35** opens a **new browser tab / window**.
+
+Playwright must:
+
+* **Click the element**
+* **Listen for the new page event at the same time**
+
+If you do them **one after the other**, you may **miss the event**.
+
+---
+
+## 2️⃣ Why `Promise.all()` or concurrent approach is required?
+
+### Sequential window handling 
+const newPage = context.waitForEvent(`page`);
+await page.locator('//div[contains(text(),"MOTOROLA g35")]').click();
+const childPage = await newPage; // ❌ may fail
+```
+
+❌ If the new tab opens **before** `waitForEvent` starts listening → **timeout**
+
+---
+
+### ✅ Correct/ Concurrent approach using `Promise.all`
+
+`Promise.all()`:
+
+* Starts **both actions at the same time**
+* Waits until **both are completed**
+
+---
+
+## 3️⃣ What exactly happens inside `Promise.all()`?
+
+Promise.all([
+  context.waitForEvent('page'),  //  Listener starts first
+  page.locator(...).click()      //  Click happens
+]);
+
+
+### Timeline (Very Important)
+
+```
+1️⃣ Start listening for new page
+2️⃣ Click the product
+3️⃣ Browser opens a new tab
+4️⃣ Playwright captures the new tab
+5️⃣ Promise resolves with the new Page object
+
+
+---
+
+## 4️⃣ Why destructuring `[childPage]`?
+
+`Promise.all()` returns an **array of results**:
+
+[
+  Page,   // result of waitForEvent('page')
+  void    // result of click()
+]
+
+So we extract only the page:
+
+
+const [childPage] = ...
+
+
+Equivalent to:
+
+const results = await Promise.all([...]);
+const childPage = results[0];
+
+---
+
+## Why use `context.waitForEvent('page')` instead of `page.waitForEvent()`?
+
+| Method                         | When to use          |
+| ------------------------------ | -------------------- |
+| `context.waitForEvent('page')` | New tab/window opens |
+| `page.waitForEvent()`          | Event on same page   |
+
+👉 New tabs belong to the **browser context**, not the parent page.
+
+---
+
+## Interview-ready explanation (Perfect answer)
+
+> `Promise.all()` is used to run the click action and page-event listener concurrently.
+> This prevents missing the new tab event and ensures Playwright captures the child window reliably.
+
+---
+
+##One-line summary 
+
+> **`Promise.all()` ensures Playwright listens for a new page while triggering the action that opens it — avoiding race conditions.**
+
+-----
+
+// //browser
+// //browser context --> window (individual isolated profile + incoginto mode/doesnt store any data)
+// // page
+
+// import { chromium, test } from "@playwright/test"; // test function is imported from playwright library
+
+// test(`Test to launch a browser`, async () =>  { // {page}=> page fixture
+
+//     const browser = await chromium.launch({channel:"msedge",headless:false}) // Step1 launching the browser
+    
+//     const context2 = await browser.newContext() // layman terms understaning Official google profile
+
+
+//     const context3 = await browser.newContext()
+
+//     const context1 = await browser.newContext() // Step2 creating a new context// ravindran profile
+//     const page1   = await context1.newPage() // Step3 new page created
+//     const page2   = await context1.newPage() 
+
+
+//     await page1.goto('https://www.amazon.in/');
+
+//     await page2.goto('https://www.flipkart.com/')
+
+//     // page.url();
+
+//     // await page.title()
+
+
+//     /* await returns promise has three stages 
+//     1. pending\
+//     2. resolve --> it has completed the action to be performed
+//     3. rejected  */
+                 
+    
+    
+//  })
+
+
+Classroom Activity in windows :
+------------------------------
+
+Question:
+--------
+
+Write a Playwright test to demonstrate handling multiple tabs sequentially:
+1, Launch Flipkart.(https://www.flipkart.com/)
+2, Search for "Phone".
+3, Click a result that opens in a new window/tab.
+4, Capture the new page using browserContext.
+5, Print titles of both pages.
+6. From the child page get the product name printed in terminal.
+6, And bring the parent page to front and continue navigation.
+
+--------------------------------------------------------------------------------------
+
+## Step 1 – What you configured
+
+```ts
+use: {
+  testIdAttribute: 'data-id'
+}
+```
+
+### Meaning in simple words:
+
+You told Playwright:
+
+> “From now on, whenever I say **getByTestId**,
+> don’t look for `data-testid`,
+> instead look for `data-id`.”
+
+So you **reprogrammed Playwright’s brain**.
+
+---
+
+## Step 2 – Your code
+
+```ts
+await page.getByTestId('MOBHFSCEDQXXDXUQ')
+         .locator('.RG5Slk')
+         .click();
+```
+
+---
+
+## Layman analogy 
+
+### Imagine a shopping mall 🏬
+
+Each shop has:
+
+* a **shop number** → `data-id`
+* inside the shop → different counters (`div`, `span`, etc.)
+
+---
+
+### You tell the security guard (Playwright):
+
+> “From today, when I say *shop id*, use the **shop number board**.”
+
+That’s this:
+
+testIdAttribute = 'data-id'
+
+---
+
+### Now you say:
+
+getByTestId("MOBHFSCEDQXXDXUQ")
+
+Playwright internally does:
+
+> “Go and find the element which has:
+html
+> data-id="MOBHFSCEDQXXDXUQ"
+
+Exactly like:
+
+```css
+[data-id="MOBHFSCEDQXXDXUQ"]
+```
+
+---
+
+### Then you say:
+
+```ts
+.locator('.RG5Slk')
+```
+
+Meaning:
+
+> “Inside that shop, go to the counter named `RG5Slk`”
+
+---
+
+### Then:
+
+```ts
+.click();
+```
+
+Meaning:
+
+> “Now physically click that counter”
+---
+
+## Why this is powerful (real-life reason)
+
+Without config:
+
+```ts
+getByTestId() → only data-testid
+```
+
+With config:
+
+```ts
+getByTestId() → any attribute YOU decide
+```
+
+So your framework becomes:
+
+* readable
+* business-friendly
+* independent of HTML structure
+
+---
+
+> “We are not changing our code to match the tool.
+> We are changing the tool to match the application.”
+
+This is how we do in real time projects.
+
+*****************************************************************************************
+//div[@data-id="MOBHFSCEDQXXDXUQ"]//a//div[contains(@class,"RG")

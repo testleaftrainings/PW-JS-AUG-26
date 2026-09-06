@@ -1,0 +1,261 @@
+📑 Agenda for Week 4 Day 2: Advanced Playwright Interactions & File Handling
+🎯 [ Focus: Handling real-world user interactions like windows, files, and data-driven testing ] 
+
+📆 Date: 06th Sep. [Sunday]  
+
+🕝 Session Highlights
+
+⿡ Recap
+* Quick review of key learnings from previous sessions. 
+
+1. *Window Handling*  
+* Understanding multiple browser contexts and tabs/windows.  
+* Switching between windows and handling pop-ups.  
+* Real-time examples: Flipkart product page.
+
+- Classroom in window handling using the reference code.
+
+2. *File Upload and File Download*  
+* Uploading files using file input elements.  
+* Working with drag-and-drop style uploads.  
+* Automating file download process in Playwright.  
+* Setting download paths and verifying file content.  
+
+- Classroom in file upload and file download using the reference code.
+
+3. *Reading JSON Files*  
+* Importing and parsing JSON test data.   
+* Best practices for maintaining test data files.
+
+
+🕡 Wrap Up / Q&A  
+
+📝 Keep your physical notebook and pen handy to sketch out ideas!
+
+----------------------------------------------------------------
+
+Classroom FileUpload :
+
+1. Go to https://leafground.com/file.xhtml;jsessionid=node0qmdifo8brour1457q9ij2a2it14242458.node0
+2. Click the "Choose" button under "Advanced Upload - Only Pictures" and upload two .png files.
+3. Write a playwright automation script to automate the above steps.
+
+-----------------------------------------------------------------------------------------------------
+ARRAY DESTRUCTING:
+------------------
+
+const [fDown] = await Promise.all([
+  page.waitForEvent("download"),
+  page.locator('//span[text()="Download"]').click()
+]);
+Step 1: What does each promise return?
+First Promise
+page.waitForEvent("download")
+
+Resolves to a Download object.
+
+Download
+Second Promise
+page.locator('//span[text()="Download"]').click()
+
+The click() method returns:
+
+Promise<void>
+
+It doesn't return the page or the locator. It simply resolves after the click action completes.
+
+Step 2: What does Promise.all() return?
+
+Promise.all() preserves the order of the promises.
+
+So after both finish, it returns:
+
+[
+   Download,
+   undefined
+]
+
+because
+
+waitForEvent() → Download
+click() → undefined
+Step 3: Array Destructuring
+
+When you write
+
+const [fDown] = ...
+
+it is equivalent to
+
+const result = await Promise.all([
+    page.waitForEvent("download"),
+    page.locator('//span[text()="Download"]').click()
+]);
+
+const fDown = result[0];
+
+So
+
+fDown
+
+contains
+
+Download
+
+The second value (undefined) is simply ignored.
+
+If you wrote
+const [fDown, clickResult] = await Promise.all([
+    page.waitForEvent("download"),
+    page.locator('//span[text()="Download"]').click()
+]);
+
+console.log(clickResult);
+
+Output:
+
+undefined
+Visual Representation
+Promise.all([
+   waitForEvent(),     // Download
+   click()             // undefined
+])
+
+           │
+           ▼
+
+[
+   Download,
+   undefined
+]
+
+           │
+           ▼
+
+const [fDown] = ...
+
+fDown = Download
+Another Example
+const [a] = [10, 20];
+
+console.log(a);
+
+Output
+
+10
+
+Similarly,
+
+const [download] = [
+    DownloadObject,
+    undefined
+];
+
+gives
+
+download = DownloadObject
+
+------------------------------------------------------------------------------------------
+# Data Parameterization with JSON
+
+---
+1. 
+
+### **Definition**
+JSON --> JavaScript Object Notation.
+
+What is JSON?
+
+JSON stands for JavaScript Object Notation.
+
+It is a format used to store and transfer data.
+
+Simple meaning:
+JSON helps computers store data in an organized way using key and value pairs.
+
+Real Life Example
+
+Think about a student form.
+
+Student Name : Hari
+Age : 22
+City : Chennai
+Mob : 989898989
+
+JSON stores data exactly like this.
+
+Example:
+
+{
+  "name": "Hari",
+  "age": 22,
+  "city": "Chennai",
+  "Mob" : "989898989"
+}
+
+Understanding Key and Value
+
+In JSON:
+
+{
+  "name": "Hari"
+}
+
+"name" → Key
+"Hari" → Value
+
+Key:
+Label/field name
+
+Value:
+Actual data stored
+
+Why JSON is Used?
+
+JSON is used because:
+
+Easy for humans to read
+Easy for computers to understand
+Used in APIs
+Used in automation testing
+Used for data sharing between frontend and backend
+
+Where We Use JSON in Automation?
+
+Test Data
+API Request/Response
+Configuration files
+Environment data
+
+Example:
+
+{
+  "username": "admin",
+  "password": "test123"
+}
+
+Used in login automation.
+
+Steps :
+
+Step 1:
+Create a .json file under Data folder
+Step 2:
+Create a .spec.ts and import data from json file similar to the sample script.
+Step 3:
+Use the imported data in your test cases for validation.    
+Step 4:
+Run the test to see data-driven testing in action. 
+
+------------------------------------------------------------------------------------------------------
+Clasroom activity print the username an password in the text fields to ensure JSON data parameterization :
+
+Salesforce url : https://login.salesforce.com/?locale=in 
+
+username1 : dilipkumar.rajendran@testleaf.com
+password1: TestLeaf@2025
+
+username2 : ravindran.ramdas@testleaf.com
+password2: Ravi@testleaf#123
+
+------------------------------------------------------------------------------------------------------
