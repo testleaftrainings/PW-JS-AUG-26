@@ -1,0 +1,380 @@
+📑 Agenda for Week5 day 01-TypeScript Fundamentals and DataTypes
+
+TypeScript Basics
+DataTypes ,Functions
+Type Assertion
+Break (breakout)
+Object literal
+Type Alias(Union and Intersection)
+Breakout
+Enum
+
+
+
+Typescript Basics:
+ ------------------
+
+ Typescript is a superset of JavaScript that adds static typing and other features to enhance code 
+ quality and maintainability. 
+ It compiles down to plain JavaScript, making it compatible with any environment that runs JavaScript.
+
+
+| Feature              | JavaScript (JS)                                       | TypeScript (TS)                                          |
+| -------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
+| **Definition**       | A scripting language used to create dynamic web pages | A superset of JavaScript developed by Microsoft          |
+| **Typing**           | Dynamically typed                                     | Statically typed (supports type checking)                |
+| **Error Detection**  | Errors appear mostly at runtime                       | Errors can be detected during compile time               |
+| **Compilation**      | Runs directly in browser                              | Must be compiled to JavaScript before running            |
+| **Code Maintenance** | Harder in large projects                              | Easier for large-scale applications                      |         
+| **Syntax**           | Simpler                                               | Slightly more structured due to types                    |
+
+
+ Installation commands
+ ---------------------
+
+// Install TypeScript globally using npm
+npm install -g typescript 
+or 
+npm install -D typescript@5.8.3 ts-node@10.9.2 @types/node
+
+//for Macbook.
+Sudo npm install -g typescript
+
+//to check the version of typescript installed
+tsc -v 
+or
+npx tsc -v
+
+//to install typescript locally in a project
+npm install --save-dev typescript
+
+//to initialize a TypeScript project and create a tsconfig.json file
+tsc --init 
+or 
+npx tsc --init
+
+//to compile TypeScript files to JavaScript and execute the compiled JavaScript file
+tsc filename.ts   ->compiles filename.ts to filename.js
+node ilename.js   -> executes the compiled JavaScript file
+
+//to run your TypeScript file directly without compiling it to JavaScript using ts-node
+npm install -g ts-node
+
+command:
+ts-node filename.ts
+or
+npx ts-node filename.ts
+
+tsconfig.json:
+--------------
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
+    "types": ["node"] ,
+    "resolveJsonModule": true
+  }
+}
+
+
+Type Inference: TypeScript automatically assigns the datatype based on the value assigned to variable. 
+---------------
+
+Implicit inference:
+------------------
+
+Implicit type inference means TypeScript automatically understands the data type of a variable based 
+on the value assigned to it.
+
+Ex:
+let city = "Chennai";   // inferred as string
+let count = 100;        // inferred as number
+let isActive = true;    // inferred as boolean
+
+Explicit inference:
+-------------------
+explicit type inference is when you explicitly declare the data type of a variable in TypeScript.
+
+ EX: let name: string = "Gauthami";
+     let Id: number = 2567;
+
+
+Datatypes in TypeScript 
+-----------------------
+
+1. number
+2. string
+3. boolean
+4. undefined
+5. null
+6. any 
+7. unknown
+8. never
+9. tuple
+
+number: It is used to represent both integer and floating-point numbers.
+
+string: It is used to represent text data. It can be enclosed in single quotes, double quotes, or 
+backticks.
+
+boolean: It is used to represent logical values, which can be either true or false.
+
+undefined: It is a type that represents the absence of a value. A variable that has been declared
+but not assigned a 
+value is of type undefined.
+
+null: It is a type that represents the intentional absence of any object value. It is often used to
+indicate that a variable has no value assigned to it.
+
+any: It is a type that can represent any value. used when are not sure about the datatype.
+
+ex: analyze the data from an API and we are not sure about the datatype of the response.
+let data: any = fetchDataFromAPI();
+expected output: data can be of any type, such as string, number, object, etc.
+
+unknown: It is a type that can represent any value, but it is safer than any because it requires 
+type checking before using the value.
+
+ex: let square:unknown=5
+if(typeof square === "number"){
+    console.log(square*square);
+}
+//output: 25
+
+use case:
+---------
+=> Reusable Utility Functions
+
+Suppose you're building a common logger:
+
+function logData(data: unknown) {
+
+    if (typeof data === "string") {
+        console.log(data.toUpperCase());
+    }
+}
+
+If you use any, someone can pass:
+
+logData(123);
+And it crashes.
+With unknown, framework forces validation.
+
+never: In Playwright, never is used for functions that permanently stop a test when a critical 
+failure happens.
+
+It is a type that represents values that never occur. It is used for functions that throw 
+exceptions or have infinite loops.
+
+Ex:
+function stopTest(message: string): never {
+  throw new Error(message);
+}
+
+stopTest("Login failed");
+
+
+| Type    | Meaning                                        |
+| ------- | ---------------------------------------------- |
+| `void`  | Function runs and finishes but returns nothing |
+| `never` | Function never finishes                        |
+
+ex:
+
+import { test, expect } from "@playwright/test";
+
+// A function that always stops the test
+
+function stopTest(message: string): never {
+    throw new Error(message);  // Test execution stops here
+}
+
+test("Login test with never example", async ({ page }) => {
+
+    await page.goto("http://leaftaps.com/opentaps/control/main");
+
+    const title = await page.title();
+
+    if (title !== "Login") { // when the title value is false 
+        stopTest("Login page did not load correctly"); // never
+    }
+
+    // This line runs ONLY if the title is correct
+    console.log("Test continues safely...");
+});
+
+
+tuple: It is a type that represents an array with a fixed number of elements, where each element can
+have a different type.
+ex: let person: [string, number] = ["Arun", 30];
+console.log(person[0]);//Arun
+
+
+Typescript function:
+--------------------
+
+function add(a: number, b: number): number {   // function that takes two numbers as parameters and returns a number
+  return a + b;                                //returns the sum of a and b to function
+}
+add(5, 10); // Output: 15
+
+
+Type assertion:
+---------------
+
+Type Assertion in TypeScript is a way to tell the compiler to treat a value as a specific type when 
+the developer knows the type better than the compiler.
+
+2 ways to perform type assertion:
+
+1) using angular brackets syntax
+
+let response : any = "Record from server"
+let myResponse = <string> response
+console.log(myResponse.length);
+
+
+2) using as keyword
+
+let sCode : any = "Sucess"
+let statusLength = sCode as string
+console.log(statusLength.length);
+
+Use case:
+---------
+
+A .env file is used to store environment-specific and sensitive configuration values separately 
+from the application code.
+
+Env file
+--------
+
+BASE_URL=https://qa.myapp.com
+USERNAME=testuser
+PASSWORD=test123
+
+typeAssertion-> used to read data from env file
+--------------
+
+await page.goto(process.env.BASE_URL as string);
+await page.fill('#username', process.env.USERNAME as string);
+await page.fill('#password', process.env.PASSWORD as string);
+
+
+Object Literal:
+---------------
+
+An object literal is a direct way of creating an object using key-value pairs enclosed within curly
+braces {}
+
+object testData
+
+let testData = {
+  username: "admin",  //key:value pair
+  password: "admin123",
+  role: "QA"
+};
+
+usage:
+------
+await page.fill("#username", testData.username);
+await page.fill("#password", testData.password);
+
+
+type Alias:
+-----------
+
+A type alias in TypeScript is a way to create a new name for an existing type. It allows you to 
+define a custom type that can be used throughout your codebase, making it easier to manage and 
+maintain complex types.
+
+type user ={
+firstname : string
+lastname : string
+mobnumber : number
+}
+
+let user1 :user ={firstname : 'sekar', lastname: 'y', mobnumber:987656778}
+let user2 :user={firstname : 'sruthi', lastname: 'r', mobnumber:807656770}
+
+
+types:
+------
+
+1. Union types
+2. Intersection types
+
+Union Types
+-----------
+
+Union Type allows a variable, parameter, or property to hold more than one type or value.
+
+type Id = string | number   
+
+let userId: Id;
+
+userId = "EMP101";   // valid
+userId = 1001;       // valid
+userId= true  //not valid
+
+console.log(userId) //1001
+
+Type Intersection
+-----------------
+
+Intersection type combines multiple types into one, meaning the value must satisfy all the types 
+together.
+
+ex:
+type User = { name: string }
+
+type Contact = { phone: number }
+
+type UserContact = User & Contact
+
+let UserContactdetails:UserContact={
+name:"Anitha",
+phone: 735808765
+}
+
+console.log(UserContactdetails.phone) //735808765
+
+
+Enum/Enumeration
+-----------------
+enum is a feature in TypeScript that allows you to define a set of named constants.
+
+enum types:
+----------
+Numeric enum(default)
+String enum
+Heterogenious enum
+
+Ex:
+enum environment{
+qa
+prod
+}
+
+let env:environment=environment.qa
+console.log(env)
+ Classroom activity
+ -----------------
+
+ 1.Create a TypeScript program to handle different payment methods using a Union Type.
+
+- Create a function that accepts only specific payment methods.
+
+
+
+- Create a type alias called PaymentMethod that allows only "UPI", "CreditCard", or "PayPal".
+
+- Write a function makePayment that takes a parameter of type PaymentMethod and prints which payment
+  method is chosen.
+
+- Call the function with "UPI" and "CreditCard" as arguments.
