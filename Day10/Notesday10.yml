@@ -1,0 +1,207 @@
+📑 Agenda for Week5 day 02 - Enum in TS and OOPs in TypeScript
+
+Enum
+Breakout
+Introduction to OOPs concepts
+Classes and Objects
+Methods and Properties
+Constructors
+Breakout+Break
+Access Modifiers (Public, Private, Protected)
+
+
+
+Enum/Enumeration
+-----------------
+enum is a feature in TypeScript that allows you to define a set of named constants.
+
+enum types:
+----------
+Numeric enum(default)
+String enum
+Heterogenious enum
+
+Ex:
+enum environment{
+qa
+prod
+}
+
+let env:environment=environment.qa
+console.log(env)
+
+OOPs:
+----
+
+OOP (Object-Oriented Programming) is a programming method that structures software by designing 
+objects, where each object contains data (properties) and behavior (methods)
+
+4 pillars of OOPs:
+------------------
+
+1. Encapsulation: Bundling data and the methods that operate on that data into a single unit 
+(class) and restricting access using access modifiers.
+
+2. Inheritance: A mechanism where a new class (child class) inherits properties and behaviors 
+from an existing class (parent class), allowing for code reusability and the creation of 
+hierarchical relationships.
+
+3. Polymorphism: The ability of different classes to be treated as instances of the same class 
+through a common interface,often achieved through method overriding or method overloading.
+
+4. Abstraction: The process of hiding the complex implementation details and showing only the 
+necessary features
+
+Features of OOPs:
+-----------------
+1. Reusable
+2. Maintainable
+3. Readable
+4. Scalable
+
+Class:
+------
+
+> Template/blueprint for creating an object.
+> variables(properties) and methods are the members of the class.
+
+>> Property: Stores the data about an object
+ex: car 
+door
+engine
+
+>> method(): function inside a class that defines action of the object.
+ex: car
+close()
+accelerate()
+
+
+> Object:
+---------
+
+ refers to instance of the class.
+
+let obj=new classname()
+
+> Constructor()->Constructor is a special method in a class used to initialize object properties 
+automatically when an object is created.
+
+types
+-----
+
+1) Default Constructor()
+
+Constructor without parameters.
+
+ex:class Employee {
+  constructor() {
+    console.log("Default Constructor Called");
+  }
+}
+
+let obj1 = new Employee()
+
+
+2) Parameterized Constructor()
+
+Constructor with parameters to pass values during object creation.
+
+class Employee {
+  name:string="sindu"
+
+  constructor(empName:string) {
+    this.name = empName;
+    console.log(this.name);
+  }
+}
+
+let obj2 = new Employee("Sindhu");
+
+classroom 1:
+
+Create class as LoginPage
+property as Url, with parameterized dataTitle with a value
+methods as Login() and Logout()
+create the Parameterized constructor (Url:string)
+create object inside the same file and execute 
+
+Create another file and call the LoginPage.
+
+
+Access Modifiers:
+-----------------
+
+Access Modifiers control visibility of properties and methods in a class.
+
+1. Public (default): Accessible everywhere
+
+public name:string = "Sindhu"
+
+2. Private: Accessible only inside same class, give permission to access or to rewrite 
+"get" and "set"
+
+private salary:number = 50000;
+
+3. Protected:Accessible inside the class and inherited child class through extends keyword.
+
+class Parent {
+  protected age:number = 25;
+}
+
+class Child extends Parent {
+  show() {
+    console.log(this.age);
+  }
+}
+
+4. readonly : constant/final --> cannot change the assigned value
+
+Ex: public readonly esalary = 20000//avail everywhere but readonly
+
+5.static: belongs to the class and not to the object --> can be accessed without creating 
+the object of the class.
+
+Ex: private static email = "www.gmail.com" //explicit access modifier
+    static email = "www.gmail.com"  //default public
+
+//can be accessed using classname
+console.log(classname.email)
+
+Note: 1. Always use explicit modifiers that makes code more readable and maintainable
+      2. Static members are not inherited, but they are accessible in the child class using 
+      the parent or child Class name, not through object or this keyword.
+
+
+
+Q] When do we use static in a TypeScript framework?
+
+We use static when the data or behavior is:
+
+Common for the entire framework
+Does NOT depend on object state
+Utility / helper / configuration
+Shared across tests, pages, or services
+
+Static for Constants & Configuration
+Use case:
+
+URLs
+Timeouts
+
+class Config {
+  static BASE_URL = "https://leaftaps.com";
+  static TIMEOUT = 5000;
+}
+
+ex:
+Usage (no object needed)
+await page.goto(Config.BASE_URL);
+
+
+Single source of truth
+Easy to maintain
+
+
+Week5
+Feedback form:  https://forms.cloud.microsoft/r/Qj3M4CUwqm
+
