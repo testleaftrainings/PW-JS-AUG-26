@@ -1,0 +1,123 @@
+### Code:
+
+```ts
+import { parse } from "csv-parse/sync";
+import fs from "fs";
+
+let records: any[] = parse(
+  fs.readFileSync("Data/login.csv"),
+  { columns: true, skip_empty_lines: true }
+);
+```
+
+---
+
+### 💡 Explanation:
+
+1. **`import { parse } from "csv-parse/sync";`**
+   → Brings in the `parse` function that helps convert CSV data into JavaScript objects.
+
+2. **`import fs from "fs";`**
+   → Imports Node’s file system module to read files from your computer.
+
+3. **`fs.readFileSync("Data/login.csv")`**
+   → Reads the CSV file from the “Data” folder.
+
+4. **`parse(..., { columns: true, skip_empty_lines: true })`**
+   → Converts the CSV content into an array of objects.
+
+   * `columns: true` → Uses the first row as column names.
+   * `skip_empty_lines: true` → Ignores blank lines.
+
+// /* 
+// Before conversion in CSV :
+
+// tcid,username,password
+// 1,demoSalesmanager,crmsfa
+// 2,demoCSR,crmsfa
+
+//Internally After conversion in JSON : 
+
+//    [
+//      { 
+//       tcid:1,
+//       username: "demoSalesManager", 
+//       password: "crmsfa" 
+//       },
+//      { 
+         tcid:2,
+//       username: "demoCSR", 
+//       password: "crmsfa" 
+//       }
+//    ]
+
+5. **`records`**
+   → Holds all the data from the CSV file, for example:
+
+   [
+     { username: "demoSalesManager", password: "crmsfa" },
+     { username: "demoCSR", password: "crmsfa" }
+   ]
+
+   ---------------------------
+
+
+   1. Array of Arrays
+[
+  [ 'tc001', 'username', 'password' ],
+  [ '1', 'democsr', 'crmsfa' ],
+  [ '2', 'democsr2', 'crmsfa' ]
+]
+
+This is called an Array of Arrays.
+
+Every row is an array.
+The first row contains the column names.
+To access data, you use indexes.
+
+Example:
+
+console.log(data[1][0]); // 1
+console.log(data[1][1]); // democsr
+console.log(data[1][2]); // crmsfa
+
+Here,
+
+data[1] → second row
+data[1][1] → second column
+Visualization
+[
+  ["tc001","username","password"],   // Header
+  ["1","democsr","crmsfa"],          // Row 1
+  ["2","democsr2","crmsfa"]          // Row 2
+]
+2. Array of Objects
+[
+  { tc001: '1', username: 'democsr', password: 'crmsfa' },
+  { tc001: '2', username: 'democsr2', password: 'crmsfa' }
+]
+
+This is called an Array of Objects.
+
+Each row is converted into an object.
+The header becomes the object's keys.
+You access data using property names.
+
+Example:
+
+console.log(data[0].tc001);      // 1
+console.log(data[0].username);   // democsr
+console.log(data[0].password);   // crmsfa
+Visualization
+[
+  {
+    tc001: "1",
+    username: "democsr",
+    password: "crmsfa"
+  },
+  {
+    tc001: "2",
+    username: "democsr2",
+    password: "crmsfa"
+  }
+]

@@ -1,0 +1,487 @@
+📑 Agenda for Week 6 Day 1: Page Object Model in TypeScript using Inheritance and Parameterizing Data
+🎯 Focus: Mastering POM in Playwright with TypeScript 
+ 
+
+📆 Date: 19th Sep. [Saturday]  
+
+🕝 Session Highlights
+
+⿡ Recap
+* Quick review of key learnings from previous sessions. 
+
+1. Implementing Data parametrization along with Inheritance
+Using Data parameterization in POM
+Examples- Geting data from various data file formats
+Exploring the concept of inheritance for code reuse.
+Examples: Implementing single and multilevel inheritance.
+
+2. *Reading JSON Files*  
+* Importing and parsing JSON test data.   
+* Best practices for maintaining test data files.
+
+3. *Reading CSV Files*  
+* Importing and parsing CSV test data.   
+* Best practices for maintaining test data files.
+
+4. *Reading ENV Files*  
+* Importing and parsing ENV test data.   
+* Best practices for maintaining test data files. 
+
+🕡 Wrap Up / Q&A  
+
+📝 Keep your physical notebook and pen handy to sketch out ideas!
+
+----------------------------------------------------------------------------------------
+Notes 
+
+Class and Object:
+
+
+Real life example of Class and Object, Properties and Methods:
+
+###  What is a *Class*?
+
+A *class* is like a *blueprint* or *template* for creating something.
+
+Example with application login :
+-----------------------------------
+
+property :
+---------
+Represents the information or data related to a particular page or object
+(e.g., username, password, URL).
+
+method :
+-------- 
+Represents the actions or operations performed on that page or object
+(e.g., fill a field, click a button, submit a form).
+
+******************************************************************************************
+
+Sample Program :
+--------------
+
+
+
+****************************************************************************************
+Constructor:
+
+Definition
+A constructor in TypeScript is a method named constructor() that runs once at the time of object creation and sets up the initial state of the object.
+Or a Special method to initialize the object
+
+*******************************************************************************************
+
+
+class LoginPage{
+
+//Properties: (Specific class related data)
+url = "https://leaftaps.com/opentaps/control/main"
+username = "democsr2"
+password = "crmsfa"
+
+//Method : (Specific class related actions )
+loadurl(){
+console.log("Load the url")
+}
+
+fillCredentials(){ // Method block--> block of code to perform an action
+
+//Actionables
+//fill method
+//use the properties "username" and "password" to perform the action to fill the login form
+
+console.log("Fill username and password in the text box")
+
+
+}
+
+clickLogin(){
+//Actionables
+//click method
+
+console.log("Click the submit button")
+
+}
+}
+
+
+const lp = new LoginPage() // ✔️ Memory is allocated //syntax to create an object(reference/ instance/copy) for a class to call the methods(actionable blocks) inside the class 
+lp.loadurl()
+lp.fillCredentials()
+lp.clickLogin()
+
+
+---
+
+class WelcomePage{
+click(){
+//Actionables
+click method
+}
+}
+
+----------------------------------------------------------------------------------------
+
+# Data Parameterization with JSON
+
+---
+1. 
+
+### **Definition**
+JSON --> JavaScript Object Notation.
+
+Feeding test data from external JSON files instead of hardcoding values.
+Useful for **data-driven testing**.
+
+Usage
+1. Sample JSON (testData.json):
+[
+  {
+    "TcaseId": "TC001",
+    "Username": "demoSalesManager",
+    "Password": "crmsfa"
+  },
+  { 
+    "TcaseId": "TC002",
+    "Username": "demoCSR",
+    "Password": "crmsfa"
+  } 
+]
+
+Step 1:
+Create a .json file under Data folder
+Step 2:
+Create a .spec.ts and import data from json file similar to the sample script.
+Step 3:
+Use the imported data in your test cases for validation.    
+Step 4:
+Run the test to see data-driven testing in action. 
+
+------------------------------------------------------------------------------------------------------
+Clasroom activity print the username an password in the text fields to ensure JSON/CSV data parameterization :
+
+Salesforce url : https://login.salesforce.com/?locale=in 
+
+username1 : dilipkumar.rajendran@testleaf.com
+password1: TestLeaf@2025
+
+username2 : ravindran.ramdas@testleaf.com
+password2: Ravisalesplay#1234
+
+------------------------------------------------------------------------------------------------------
+
+
+# Data Parameterization with CSV
+---
+### **Definition**
+CSV --> Comma Seperated Values.
+
+Reading test data from CSV files and running tests with multiple data sets.
+CSV is widely used in organizations for bulk test data (rows = test cases, columns = input fields).
+
+Usage
+1. Sample CSV (testData.csv):
+
+tcid,username,password
+1,demoSalesManager,crmsfa
+2,demoCSR,crmsfa
+
+Step 1:
+Install csv command :
+npm install csv-parse.
+
+Step 2:
+Create a .csv file under Data folder.
+
+Step 3:
+Create a .spec.ts and import data from csv file similar to the sample script.
+
+Step 3:
+Use the imported data in your test cases for validation.  
+
+Step 4:
+Run the test to see data-driven testing in action.
+
+------------------------------------------------------------------------------------------------------
+
+# Data Parameterization with ENV
+---
+### **Definition**
+
+A .env file (short for environment file) is a simple text file used to store environment variables in the form of key-value pairs.
+
+It is commonly used in projects to separate configuration data (like URLs, API keys, database credentials, secrets) from the actual application code.
+
+Usage
+1. Sample ENV (config.env):
+
+APP_URL=https://example.com
+USERNAME=demoUser
+PASSWORD=securePass123
+
+
+Step 1:
+Install dotenv : command - npm install dotenv.
+Step 2:
+Create a .env file under Data folder.
+Step 3:
+Create a .spec.ts and import data from env file similar to the sample script. 
+Step 4:
+Use the imported data in your test cases for validation.
+Step 5:
+Run the test to see data-driven testing in action.
+
+If you need to set environment in the config file follow below steps:
+
+1. Open 2 config files fpr qa and prod seperately
+2. Paste the import script in the playwright.qa.config.ts 
+
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: 'Data/qa.env' });
+
+3. Also Paste the import script in the playwright.prod.config.ts 
+
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: 'Data/prod.env' });
+
+4. Now execute the 03-learntoReadENV.spec.ts with the below command in the terminal
+
+--> For qa environment
+npx playwright test 03-learntoReadENV.spec.ts --config=playwright.qa.config.ts 
+
+--> For prod environment
+npx playwright test 03-learntoReadENV.spec.ts --config=playwright.prod.config.ts 
+
+Note you can also set this commands in package.json like below
+
+"scripts": {
+    "test:qa": "npx playwright test 03-learntoReadENV.spec.ts --config=playwright.qa.config.ts",
+    "test:prod": "npx playwright test 03-learntoReadENV.spec.ts --config=playwright.prod.config.ts"
+
+  }
+
+  and excute the same with terminal commands like 
+
+  npm run "test:qa"
+  npm run "test:prod"
+
+  -----------------------------------------------------------------------
+
+🔹 Different types of imports in JS / TS
+
+There are two main ways to import something:
+
+1️⃣ Default import
+import fs from "fs";
+
+2️⃣ Named import
+import { parse } from "csv-parse/sync";
+
+🔹 Why fs does NOT use { }?
+✅ Because fs is a DEFAULT EXPORT
+
+The Node.js fs module exports one main object (the whole file system API).
+
+So you import the entire module as a single object:
+
+import fs from "fs";
+
+
+👉 fs now contains:
+
+fs.readFileSync
+fs.writeFileSync
+fs.existsSync
+fs.mkdirSync
+...
+
+
+You access methods using dot notation:
+
+fs.readFileSync("data.csv");
+
+🔹 Why parse DOES use { }?
+✅ Because parse is a NAMED EXPORT
+
+The csv-parse/sync module exports specific functions, one of which is parse.
+
+So you must destructure it:
+
+import { parse } from "csv-parse/sync";
+
+
+👉 You are saying:
+
+“Give me only the parse function from this module”
+
+Usage:
+
+const records = parse(csvData);
+
+🔹 Think of it like a real-life example 🧠
+📦 Module as a Box
+fs module:
+📦 fs
+ ├── readFileSync
+ ├── writeFileSync
+ ├── unlinkSync
+ └── ...
+
+
+You take the whole box:
+
+import fs from "fs";
+
+csv-parse/sync module:
+📦 csv-parse
+ ├── parse
+ ├── stringify
+ └── ...
+
+
+You take only one item from the box:
+
+import { parse } from "csv-parse/sync";
+
+🔹 Can fs be imported with {}?
+
+❌ This will NOT work:
+
+import { fs } from "fs"; // ❌ WRONG
+
+
+But ✅ this will work:
+
+import { readFileSync } from "fs";
+
+
+Because readFileSync is a named export.
+
+🔹 Summary Table 📌
+Import Style	Syntax	When to Use
+Default Import	import fs from "fs"	When module exports ONE main object
+Named Import	import { parse } from "csv-parse/sync"	When module exports multiple named items
+🔹 Relating to Playwright (easy to remember)
+import test from "@playwright/test";   // default export
+import { expect } from "@playwright/test"; // named export
+
+-----------------------------------------------------------------------
+# Test Annotation :
+---
+
+--> Control the behaviour of the execution.
+
+hooks -> The execution flow before and after the actual test execution.
+------
+test.beforeAll --> before all test it will be executed
+test.beforeEach --> before each test it will be executed
+test.afterEach -->  after each test it will be executed
+test.afterAll --> after all test it will be executed
+
+
+--------------------------------------------------------------------
+
+Inheritance :
+
+1. Single Inheritance :
+
+classA{} 
+classB extends A{}
+
+Parent to Child
+
+2. Multilevel Inheritance :
+
+class A{}
+
+class B extends A{}
+class C extends B{}
+
+Grandparent A -> parent B -> child C
+
+3. Hierarchical inheritance 
+
+class A{}
+
+class B extends A{}
+class C extends A{}
+
+Parent having 2 children :
+
+Parent Class A --> Class B
+               --> Class C
+
+4. Hybrid Inheritance
+
+A combination of two or more types of inheritnace (e.x : multilevel and Hierarchical)
+
+
+5. Multiple Inheritance
+Typescript does not support multiple inheritnace using classes.
+Can be achieved through interface.
+
+*************************************************************************************************
+
+Page Object Model :
+
+POM means:
+
+Each web page (or module) of your application is represented by a separate class,
+and that class contains locators and methods that act on that page.
+
+While desiging POM things to do:
+
+1. Inheritance => mutilevel inheritance
+2. Abstraction => playwright wrapper class
+3. Data parameterization => json, env, faker(synthetic data)
+4. Custom Fixture => Used to create ready made objects
+
+Inheritance
+
+abstract class -> loginPage --> welcomePage --> leadPage --> CreateLeadPage --> ViewLeadPage
+
+
+faker library installation :
+
+npm install @faker-js/faker@8.4.1
+
+
+Naming Conventions in JavaScript
+
+=> File Names :
+--------------
+
+camelCase
+
+Example:
+
+loginPage.js
+userProfile.js
+
+=> Variables :
+-------------
+
+camelCase
+
+Start with a lowercase letter
+
+Example:
+
+isActive
+userName
+totalAmount
+
+=> Classes
+-----------
+
+PascalCase
+
+Start with an uppercase letter
+
+Example:
+
+class LoginPage { }
+class UserService { }
