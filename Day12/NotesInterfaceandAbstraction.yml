@@ -1,0 +1,366 @@
+Interface Example :
+-------------------
+
+# Step 1: Swiggy Rules
+
+interface SwiggyRules {
+
+    menu(): void
+    acceptOrder(): void
+    prepareFood(): void
+
+}
+
+---
+
+# Step 2: Zomato Rules
+
+Imagine the same restaurant also wants to partner with Zomato.
+
+Zomato has additional requirements:
+
+
+interface ZomatoRules {
+
+    trackOrder(): void
+    provideDiscount(): void
+
+}
+```
+
+---
+
+# Step 3: One Restaurant Following Both Rule Books
+
+```ts
+class A2B implements SwiggyRules, ZomatoRules {
+
+    menu(): void {
+        console.log("South Indian Menu");
+    }
+
+    acceptOrder(): void {
+        console.log("Order Accepted");
+    }
+
+    prepareFood(): void {
+        console.log("Preparing Food");
+    }
+
+    trackOrder(): void {
+        console.log("Tracking Order");
+    }
+
+    provideDiscount(): void {
+        console.log("Providing 10% Discount");
+    }
+
+}
+```
+
+---
+
+# Visual Representation
+
+          SwiggyRules
+        ----------------
+        menu()
+        acceptOrder()
+        prepareFood()
+               ▲
+               |
+               |
+               |
+A2B Restaurant |
+               |
+               |
+               ▼
+         ZomatoRules
+       ----------------
+       trackOrder()
+       provideDiscount()
+```
+
+Here:
+
+```ts
+class A2B implements SwiggyRules, ZomatoRules
+```
+
+The A2B restaurant inherits rules from **two interfaces**.
+
+This is called:
+
+### Multiple Inheritance using Interfaces
+
+---
+
+Questions:
+----------
+
+
+> Can one restaurant be available in both Swiggy and Zomato?
+
+Yes
+
+A2B follows Swiggy's rules
++
+A2B follows Zomato's rules
+
+Therefore:
+
+implements SwiggyRules, ZomatoRules
+
+---
+
+# What Happens If A2B Misses One Method?
+
+class A2B implements SwiggyRules, ZomatoRules {
+
+    menu(): void {}
+    acceptOrder(): void {}
+    prepareFood(): void {}
+    trackOrder(): void {}
+
+}
+
+TypeScript Error:
+
+Class 'A2B' incorrectly implements interface 'ZomatoRules'
+
+Property 'provideDiscount' is missing
+
+Because:
+
+Rule not followed ❌
+
+---
+
+# Compare with Class Inheritance
+
+This is NOT allowed:
+
+class Restaurant extends Swiggy, Zomato {
+}
+
+❌ Error
+
+A class can extend only one class.
+
+But:
+
+class Restaurant implements SwiggyRules, ZomatoRules {
+}
+
+
+✅ Allowed
+
+---
+
+
+A class can extend only one class,
+but can implement multiple interfaces.
+
+
+---------------------------------------------------------------------------------------------------------------
+
+ABSTARCTION Example :
+
+# Step 1:
+
+Suppose Swiggy partners with thousands of restaurants.
+
+Every restaurant has some common behavior:
+
+* Accept Order
+* Generate Bill
+
+But every restaurant prepares food differently.
+
+For example:
+
+A2B       → South Indian Food
+KFC       → Fried Chicken
+Dominos   → Pizza
+
+Swiggy knows that every restaurant must prepare food, but it doesn't know *how*.
+
+This is where **abstraction** comes in.
+
+---
+
+# Step 2: Create an Abstract Class
+
+abstract class Restaurant {
+
+    acceptOrder() {
+        console.log("Order Accepted");
+    }
+
+    generateBill() {
+        console.log("Bill Generated");
+    }
+
+    abstract prepareFood(): void;
+
+}
+
+### Explain to learners
+
+acceptOrder()  ✔ Common
+generateBill() ✔ Common
+
+prepareFood()  ❌ Different for every restaurant
+
+Therefore:
+
+abstract prepareFood(): void;
+
+
+---
+
+# Step 3: A2B Completes the Missing Work
+
+class A2B extends Restaurant {
+
+    prepareFood(): void {
+        console.log("Preparing Dosa and Idly");
+    }
+
+}
+
+---
+
+# Step 4: KFC Completes the Missing Work
+
+class KFC extends Restaurant {
+
+    prepareFood(): void {
+        console.log("Preparing Fried Chicken");
+    }
+
+}
+
+---
+
+# Step 5: Dominos Completes the Missing Work
+
+class Dominos extends Restaurant {
+
+    prepareFood(): void {
+        console.log("Preparing Pizza");
+    }
+
+}
+
+---
+
+# Usage
+
+const a2b = new A2B();
+
+a2b.acceptOrder();
+a2b.prepareFood();
+a2b.generateBill();
+
+Output:
+
+Order Accepted
+Preparing Dosa and Idly
+Bill Generated
+
+---
+
+# Visual Diagram
+
+                Restaurant
+           -------------------
+           acceptOrder()   ✔
+           generateBill()  ✔
+           prepareFood()   ❌
+           -------------------
+                abstract
+                     ▲
+         -------------------------
+         |            |          |
+         |            |          |
+        A2B          KFC      Dominos
+
+ prepareFood()  prepareFood()  prepareFood()
+
+ Dosa/Idly      Chicken        Pizza
+
+---
+
+# Difference Between Interface and Abstract Class
+
+Using the same restaurant example:
+
+### Interface = Rule Book
+
+interface SwiggyRules {
+
+    acceptOrder(): void
+    prepareFood(): void
+
+}
+
+Swiggy only says:
+
+> "You must provide these methods."
+
+No implementation.
+
+---
+
+### Abstract Class = Partially Built Restaurant
+
+abstract class Restaurant {
+
+    acceptOrder() {
+        console.log("Order Accepted");
+    }
+
+    abstract prepareFood(): void;
+
+}
+
+
+Now Swiggy says:
+
+> "I've already implemented order acceptance for everyone. You only implement food preparation."
+
+---
+
+# Simple Teaching Statement
+
+### Interface
+
+Restaurant Owner gets a rule book.
+
+"These methods must exist."
+
+### Abstract Class
+
+Restaurant Owner gets a half-built restaurant.
+
+Some work is already done.
+Remaining work must be completed.
+
+### Class
+
+Finished restaurant ready for customers.
+
+---
+
+Summary :
+---
+
+Interface = WHAT should be done
+
+Abstract Class = WHAT + SOME OF HOW
+
+Class = COMPLETE HOW
+
+
+-----------------------------------------------------------------------------------------------------------------

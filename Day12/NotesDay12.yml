@@ -1,0 +1,184 @@
+📑 Agenda for Week 6 Day 2 : Implementing inheritance, wrapper /abstract class in POM and understanding MCP
+🎯 Focus: Mastering POM using OOPS concept and implementing using MCP
+
+📆 20th Sep., Sunday
+
+🕝 Session Highlights
+
+⿡ Recap
+Quick review of previous learnings.
+
+1. Abstraction                 
+Using abstract classes and methods to define templates.
+Implementing the same in POM.
+Examples: Designing partially implemented base classes.
+
+Breakout Activity in Interface and Abstraction Concepts
+
+2. Inheritance
+Exploring the concept of inheritance for code reuse.
+Examples: Implementing single and multilevel inheritance.
+
+3. Polymorphism
+
+Understanding how the same method can behave differently in different classes.
+Examples:
+Method Overriding using inheritance.
+Runtime Polymorphism in TypeScript.
+
+4. Understanding MCP Server Integration and Playwright Agents.
+Integrating Playwright tests with MCP (Model Context Protocol) server for enhanced test management and reporting.
+Examples: Uploading test results, managing test cases, and generating reports.
+
+Notes :
+------
+
+********************************************************************************************************
+
+Inheritance :
+
+1. Single Inheritance :
+
+classA{} 
+classB extends A{}
+
+Parent to Child
+
+2. Multilevel Inheritance :
+
+class A{}
+
+class B extends A{}
+class C extends B{}
+
+Grandparent A -> parent B -> child C
+
+3. Hierarchical inheritance 
+
+class A{}
+
+class B extends A{}
+class C extends A{}
+
+Parent having 2 children :
+
+Parent Class A --> Class B
+               --> Class C
+
+4. Hybrid Inheritance
+
+A combination of two or more types of inheritnace (e.x : multilevel and Hierarchical)
+
+
+5. Multiple Inheritance
+Typescript does not support multiple inheritnace using classes.
+Can be achieved through interface.
+
+*************************************************************************************************
+
+Page Object Model :
+
+POM means:
+
+Each web page (or module) of your application is represented by a separate class,
+and that class contains locators and methods that act on that page.
+
+While desiging POM things to do:
+
+1. Inheritance => mutilevel inheritance
+2. Abstraction => playwright wrapper class
+3. Data parameterization => json, env, faker(synthetic data)
+4. Custom Fixture => Used to create ready made objects
+
+Inheritance
+
+abstract class -> loginPage --> welcomePage --> leadPage --> CreateLeadPage --> ViewLeadPage
+
+
+faker library installation :
+
+npm install @faker-js/faker@8.4.1
+
+----------------------------------------------------------------------------
+
+1. Interface :
+-----------------
+
+Interface is a contract/rule book that defines what a class must do, but does not provide the implementation.
+
+In simple terms:
+
+Interface = What to do, but not How to do it.
+
+
+- Complete hiding of the implemented.
+- 100% abstraction.
+- Only unimplemented methods.
+
+Summarize 
+
+- class extends another class
+- abstract extends another abstract class
+- interface extends another interface
+- class extends abstract class
+- class implements interface
+- class extends abstract class implemnets interface
+
+(Note : In playwright we cannot see implementation of your page fixture, context browser in playwright everytging is put in as interface.)
+
+2. Abstraction
+----------------- 
+
+Definition:
+
+Abstraction means hiding the internal implementation and exposing only the required functionality to the user.
+
+In simple terms:
+
+Abstraction = Hide the complexity and show only what is necessary.
+
+abstract class :
+
+- 0 to 100% abstraction.
+- Method signature --> unimplementedmethods
+- Implemented methods --> logic 
+
+---------------------------------------------
+3. Polymorphism
+
+Definition:
+
+Polymorphism is an OOP concept where the same method or interface can behave in different ways depending on how or where it is used.
+
+In simple terms:
+
+Polymorphism = One name, many forms.
+
+In TypeScript, polymorphism can be achieved through:
+
+Function/Method Overloading → Compile Time Polymorphism
+Method Overriding → Run Time Polymorphism
+
+---------------------------------------------------
+
+Polymorphism is the OOP principle that allows a single interface or method to have multiple implementations. 
+In TypeScript, it is achieved through function overloading (compile-time polymorphism) and method overriding using inheritance (run-time polymorphism).
+
+Overloading → Compile Time → Same method, different parameters
+Overriding → Run Time → Child class override the parent method
+
+
+
+faker library installation :
+
+npm install @faker-js/faker@8.4.1
+
+
+
+Page Object Model:
+
+Data sources 
+
+1.  .json/.csv/.xlsx we get user data from client.
+2. .env file for environment related data.
+3. faker data to fetch synthetic data during the execution of test.
