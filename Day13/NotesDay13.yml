@@ -1,0 +1,294 @@
+📑 Agenda for Week 07 Day 01: MCP (Model Context Protocol) and REST API Fundamentals 
+🎯 [ Focus: Understanding MCP and the core concepts on implementation of REST APIs ] 
+
+📆 Date: 26 Sep. [Saturday]  
+
+🕝 Session Highlights  
+  
+⿡ Recap  
+* Quick review of key learnings from previous sessions.  
+
+1. Understanding MCP Server Integration and Playwright Agents.
+Integrating Playwright tests with MCP (Model Context Protocol) server for enhanced test management and reporting.
+Examples: Uploading test results, managing test cases, and generating reports.
+
+BREAKOUT SESSION FOR MCP HANDSON
+
+2. Introduction to REST API  
+* Overview of REST architecture and principles.  
+
+BREAK
+
+3. Headers  
+* Understanding HTTP headers and their significance in API requests.  
+
+4. Verbs (POST, PUT, GET, DELETE, PATCH)  
+* Explanation of HTTP methods and their use cases.  
+
+5. Request Body & Response Body  
+* Understanding the structure and purpose of request and response payloads.  
+
+6. Authorization Types  
+* Overview of different authorization methods (e.g., Basic Auth, OAuth2).
+
+7. Implementation in Postman - POST & GET Leads Without Global Variable [Saleforce]
+* Demonstration: Creating and retrieving Leads.
+
+8. Create "Lead" in Salesforce
+* Practical exercise: Working with Lead using POST and GET requests. 
+
+HANDSON IN SALESFORCE USING "UPDATE" AND "DELETE"
+
+
+🕡 Wrap Up / Q&A  
+
+📝 Keep your physical notebook and pen handy to sketch out ideas!
+
+-------------------
+
+------------------------------
+MCP Description :
+---
+
+Playwright-Specific Interview Answer
+
+In Playwright automation, MCP allows an AI assistant to communicate with a Playwright server and execute browser actions such as clicking buttons, filling forms, navigating pages, and validating UI elements. 
+The LLM decides what action to perform, MCP translates the request into a standard format, and Playwright executes it in the browser and returns the results back to the LLM.
+
+------------------------------------------
+Standard protocol that allows LLMs to discover and communicate with external tools such as Playwright.
+
+Without MCP:
+LLM needs custom integrations for every tool
+
+With MCP:
+One standard protocol for all tools
+
+------------------------------------------------------------------------------
+MCP Line Diagram :
+---
+                 USER PROMPT
+                       │
+                       ▼
+            ┌─────────────────┐
+            │       LLM       │
+            │ GPT/Claude/etc  │
+            └─────────────────┘
+                       │
+                       ▼
+            ┌─────────────────┐
+            │       MCP       │
+            │ Standard Tool   │
+            │ Communication   │
+            │ Protocol        │
+            └─────────────────┘
+                       │
+                       ▼
+            ┌─────────────────┐
+            │ Playwright MCP  │
+            │     Server      │
+            └─────────────────┘
+                       │
+                       ▼
+            ┌─────────────────┐
+            │    Browser      │
+            └─────────────────┘
+                       │
+                       ▼
+                 Web Results
+
+Results flow back through:
+Browser → Playwright → MCP → LLM
+
+
+----
+
+API Fundamentals:
+
+
+REST API -> Representational State Transfer Application Programming Interface.
+
+
+
+Interview Based Questions :
+-------------------------
+
+1. Architectute Type?
+REST API's follow's Client server archirtecture.
+Micro services.
+
+2. HTTP Request Methods :(CRUD operations--> Create Update Retrieve, Delete)
+POST, PUT, PATCH, GET, DELETE
+
+3. Difference between URI and URL?
+
+A URI (Uniform Resource Identifier) is a string that uniquely identifies a resource, while a URL (Uniform Resource Locator) is a type of URI that specifies the resource’s location (address) and how to access it.
+
+4. Stateless/ Statefull?
+
+A stateless system means:
+Each request is independent — the server does not remember anything about previous requests.
+
+A stateful system means:
+The server remembers information (state) between requests.
+
+REST API follow stateless, which means request contains all the information needed to process your activity. 
+
+5.Difference between Authentication and Authorization?
+Authentication verifies identity , while authorization checks access rights.
+
+| Concept           | **Authentication**                                   | **Authorization**                                                        |
+| ----------------- | ---------------------------------------------------- | ------------------------------------------------------------------------ |
+| **Meaning**       | It verifies **who you are**                          | It defines **what you can do**                                           |
+| **Purpose**       | Confirms the **identity** of a user                  | Grants or restricts **access/permissions**                               |
+| **Happens When?** | Always happens **before** authorization              | Happens **after** authentication                                         |
+| **Example**       | You log in with your username and password           | Once logged in, you can access only your own profile, not admin settings |
+| **Analogy**       | Showing your ID card at the gate                     | Being allowed to enter only certain rooms based on your role             |
+
+
+6. Various Response Code?
+Response Codes liek 201 Created, 200 (OK), 401(Unauthorized), 404(NOt found).
+
+200 series --> success of what ecer api action that you implement (eg POST, GET, PUT, PATCH, DELETE )
+400 series --> Client side error. (ex username, password, endpoint , request body format)
+500 series --> Server side error. (ex server down)
+
+7. Request Headers ?
+
+Headers are key-value pairs sent along with the request that describe how the client and server should communicate.
+
+Example : 
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer <token>
+
+8. Schema Validation and response validation?
+
+Schema Validation :
+
+Schema validation checks if the data structure (keys + value types) in the response matches the expected format.
+
+Example:
+
+{
+"id":101,
+"name":"Ravi",
+"isActive":true
+}
+
+{
+"id":"101",           //id is a string not a number
+"name":"Ravi",
+"isActive":true
+}
+
+Response validation:
+Response validation checks the actual values returned, not just the data type.
+
+Example:
+
+{
+"id":101,
+"name":"Ravi",
+"isActive":true
+}
+
+{
+"id":"101",           //wrong value reponse validation
+"name":"Ravi",
+"isActive":false
+}
+
+---
+
+9. Difference between REST API and REST ASSURED?
+
+REST API is the actual web services, while REST ASSURED is a Java Library used to test REST API's.
+
+---
+10. Path parameter and query parameter?
+
+| Feature             | **Path Parameter**                                      | **Query Parameter**                       |
+| ------------------- | ------------------------------------------------------- | ----------------------------------------- |
+| **Purpose**         | Identifies a **specific resource**                      | Filters or customizes the **result**      |
+| **Location in URL** | Part of the **URL path**                                | Comes **after `?`** in the URL            |
+| **Syntax Example**  | `/users/101`                                            | `/users?id=101`                           |
+| **UsempId**           | To point to one resource (like a specific user or lead) | To send filters, search terms, or options |
+| **Visibility**      | Mandatory part of the endpoint                          | Optional part of the endpoint             |
+| **Separator**       | `/` slash                                               | `?` for first, `&` for multiple           |
+
+
+
+---
+11. Five Steps process for API testing
+------------------------------------
+
+1. Documentation
+: Understanding the API’s purpose, structure, and usempId guidelines before testing.
+Example: 
+: Reading Swagger docs that describe how the incident API works in an application.
+
+2. Endpoints: 
+: Specific URLs that represent resources or actions to be tested.
+Example: 
+: https://dev267889.service-now.com/login.do?user_name=admin&sys_action=sysverb_login&user_password=%25eBzU%24kw5VC8 (incident resource).
+
+3. Methods: 
+: HTTP operations (GET, POST, PUT, DELETE, etc.) that define the type of action on the resource.
+Example: 
+: GET /incident → fetch incidents; POST /incident → create a new incident.
+
+4. Headers: 
+: Metadata sent with requests or responses to control and describe API behavior.
+Example: 
+Content-Type: application/json, Accept: application/json.
+
+5. Authorization: 
+: Security mechanism to verify and allow only valid users or systems to access the API.
+Example: 
+Authorization: Bearer <token> or Basic Auth with username & password.
+
+Together, these 5 steps ensure your API test covers what, where, how, and who can access the service.
+
+
+********************************************************************************************
+
+Salesforce document to get endpoint to generate access token  :
+https://help.salesforce.com/s/articleView?languempId=en_US&id=xcloud.remoteaccess_oauth_endpoints.htm&type=5
+
+Salesforce document to do CRUD operation for  Lead /Account :
+https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_curl.htm 
+
+
+--------------------------------------
+Steps to find the field in salesforce :
+----------------------------------------
+
+From Salesforce Setup (Recommended)
+
+Log in to your Salesforce Developer Org.
+
+Go to Setup → Object Manager.
+
+Search for and click on Lead.
+
+Open Fields & Relationships.
+
+You’ll see a list of all the fields available on the Lead object.
+
+The Field Label is what you see in the UI (e.g., “Last Name”).
+
+The Field Name is what you use in the API (e.g., LastName, Company).
+
+These “Field Names” are what you should use in your JSON request body.
+
+✅ Example:
+
+{
+
+  "LastName": "Ravindran",
+  "Company": "Testleaf",
+  "Email": "ravi@testleaf.com",
+}
+
+-------------------------------------------------------------------------------
