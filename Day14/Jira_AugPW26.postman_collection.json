@@ -1,0 +1,63 @@
+{
+  "info": {
+    "_postman_id": "5754924b-6e0b-48da-8699-2a3301286f4e",
+    "name": "Jira_AugPW26",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44448055",
+    "_collection_link": "https://go.postman.co/collection/44448055-5754924b-6e0b-48da-8699-2a3301286f4e?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Create_Bug",
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "ravindranr90@gmail.com",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "ATATT3xFfGF0pgYpbicM-aYsD53Svj_SxZWIzqELkp65azbtv0O5_bwyVK6UAvqj5wqxgB25kR4aRwSEZ8wia1EmDoQtXDW5tcRhCGLuRoyvU0CZlk3d2vFR3y7gP_Y6AYVl2QnC2QNCKtNKRqb64TYhh7KAJIkUQgk2PXEr3fB3jwAc3Lg_QIs=1107DE51",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n\"fields\": {\r\n    \"project\":{\r\n        \"key\":\"AUG\"\r\n    },\r\n    \"issuetype\":\r\n    {\r\n                \"name\":\"Bug\"\r\n    },\r\n    \"summary\":\"LoginPageFunctionalityCheckUsingPOstman\",\r\n    \"description\":\"Testing LoginPage ThroughPostman\"\r\n\r\n}\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://manual-testing-demoproject.atlassian.net/rest/api/2/issue",
+          "protocol": "https",
+          "host": [
+            "manual-testing-demoproject",
+            "atlassian",
+            "net"
+          ],
+          "path": [
+            "rest",
+            "api",
+            "2",
+            "issue"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

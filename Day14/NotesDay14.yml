@@ -1,0 +1,648 @@
+
+📑 Agenda for Week 07 Day 02: Playwright with REST API Integration - SALESFORCE
+
+🎯 [ Focus: Integrating Playwright with REST APIs for End-to-End Automation Testing ]
+
+📆 [27 Sep. Sunday]  
+
+🕝 Session Highlights  
+
+⿡ Recap  
+* Quick review of key learnings from previous sessions.  
+
+SALESFORCE :
+------------
+⿦ APIRequest, APIRequestContext, APIResponse  
+* Overview of these key Playwright API concepts.  
+
+⿧ Status Code, Response Body & Response Time  
+* Understanding and validating API response attributes.  
+
+⿨ POST Call (Creating a Lead)  
+* Demonstration of making POST requests in Playwright.  
+
+⿩ GET Call (Retrieving the Lead)  
+* Retrieving data using GET requests in Playwright.  
+
+ DELETE Call (Deleting the Lead)  
+* Automating the deletion of records using DELETE requests.  
+
+
+------------------------------------
+
+Notes:
+-----
+
+PLAYWRIGHT UI AUTOMATION // page fixture
+
+chromium.launch()
+      ↓
+   Browser
+      ↓
+browser.newContext()
+      ↓
+ BrowserContext
+      ↓
+context.newPage() 
+      ↓
+    Page
+      ↓
+    Tab
+
+--------------------------------
+
+PLAYWRIGHT API AUTOMATION
+-------------------------
+
+request.newContext() // request fixture for API automation
+      ↓
+APIRequestContext
+      ↓
+GET / POST / PUT / DELETE
+      ↓
+   API Server
+      ↓
+   Response
+
+Analogy:
+
+UI automation = open the browser and interact with the application through the page.
+API automation = skip the browser and talk directly to the backend through HTTP requests.
+
+---------------------------------------------------
+
+creating page reference in playwright :
+
+const browser = chromium.launch() --> Connect btowser engine
+const context = browser.newContext() --> Window launched
+const page = context.newPage() --> a tab is loaded in that particular Window
+
+APIRequestContext makes HTTP requests directly to the API endpoint.:
+
+creating request reference in playwright using "APIRequestContext" :
+  // 1. Create a new API context (like creating a browser context)
+  const apiContext = await request.newContext(); //Creates a new API request context (like an isolated API session)
+
+  // 2. Send API request (GET, POST, PUT, DELETE, etc.)
+  const response = await apiContext.post('https://reqres.in/api/users/2'); //Sends a GET request
+
+  // 3. Validate response
+  console.log(await response.status());       // 200
+
+APIRequestContext--> Interface provided by Playwright to make your API calls.
+
+-------------------------------------------------
+
+
+/* Things to remember during a POSTMAN request :
+
+1. endpoint
+2. CRUD - POST, GET, PATCH, DELETE
+3. Authorization :  bearer token for salesforce application
+username and password
+4. Headers :
+ content-type : application/json
+5. Body : raw-> json
+{
+    "LastName": "Ravindran",
+    "Salutation": "Mr.",
+    "Company": "TestLeaf"
+} */
+
+
+Developer Guide :
+-----------------
+
+
+Salesforce document to get endpoint to generate access token  :
+https://help.salesforce.com/s/articleView?languempId=en_US&id=xcloud.remoteaccess_oauth_endpoints.htm&type=5
+
+Salesforce document to do CRUD operation for  Lead /Account :
+https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_curl.htm 
+
+
+--------------------------------------
+Steps to find the field in salesforce :
+----------------------------------------
+
+From Salesforce Setup (Recommended)
+
+Log in to your Salesforce Developer Org.
+
+Go to Setup → Object ManempIdr.
+
+Search for and click on Lead.
+
+Open Fields & Relationships.
+
+You’ll see a list of all the fields available on the Lead object.
+
+The Field Label is what you see in the UI (e.g., “Last Name”).
+
+The Field Name is what you use in the API (e.g., LastName, Company).
+
+These “Field Names” are what you should use in your JSON request body.
+
+https://testleaf22-dev-ed.develop.my.salesforce-setup.com/lightning/setup/ObjectManempIdr/Lead/FieldsAndRelationships/view
+
+✅ Example:
+
+{
+
+  "LastName": "Ravindran",
+  "Company": "Testleaf",
+  "Email": "ravi@testleaf.com",
+  "Phone": "8888888"
+}
+
+-------------------------------------------------------------------------------
+
+Script used to set global variable:
+-----------------------------------
+
+var leadresponse = pm.response.json();
+console.log(leadresponse)
+
+var resToken = leadresponse.access_token
+
+var url = leadresponse.instance_url
+
+pm.globals.set("GeneratedToken",resToken)
+
+------------------------------------------------
+
+Salesforce OAuth token generation uses *x-www-form-urlencoded* because it follows the *OAuth 2.0 specification, while creating a Lead uses **raw JSON* because it is a *REST resource operation*.
+
+---
+
+DETAILED EXPLANATION (WHY THE DIFFERENCE)
+
+---
+
+1. ACCESS TOKEN GENERATION (OAuth 2.0)
+
+Purpose
+Authenticate the client and generate an access token.
+
+API Type
+OAuth authentication endpoint.
+
+Why x-www-form-urlencoded
+
+* OAuth 2.0 standard mandates parameters to be sent as form data
+* Parameters are simple key–value pairs
+* Designed to be lightweight and secure
+* Compatible with browsers, servers, and legacy systems
+
+Typical Parameters
+grant_type
+client_id
+client_secret
+username
+password
+
+These are *credentials*, not business data.
+
+Example (Postman – Body)
+x-www-form-urlencoded
+grant_type=password
+client_id=xxxx
+client_secret=xxxx
+username=xxx
+password=xxx
+
+---
+
+2. CREATE LEAD (Salesforce REST API)
+
+Purpose
+Create a business record (Lead).
+
+API Type
+REST resource endpoint.
+
+Why raw JSON
+
+* Lead has complex structured data
+* JSON supports objects, arrays, nested fields
+* Easier to validate and extend
+* Industry-standard for REST CRUD operations
+
+Example (Postman – Body)
+raw → JSON
+
+{
+"LastName": "Ravi",
+"Company": "Testleaf",
+"Email": "[ravi@testleaf.com](mailto:ravi@testleaf.com)",
+"Phone": "9999999999"
+}
+
+---
+
+3. SIDE-BY-SIDE COMPARISON (INTERVIEW READY)
+
+Access Token API
+
+* Purpose: Authentication
+* Standard: OAuth 2.0
+* Body Type: x-www-form-urlencoded
+* Data Type: Credentials
+* Endpoint: /services/oauth2/token
+
+Create Lead API
+
+* Purpose: Business operation
+* Standard: REST
+* Body Type: raw JSON
+* Data Type: Business data
+* Endpoint: /services/data/vXX.X/sobjects/Lead
+
+---
+
+4. IMPORTANT POINT (VERY COMMON DOUBT)
+
+You *cannot send JSON* to Salesforce OAuth token endpoint.
+Salesforce will reject it because OAuth servers expect *form-encoded data only*.
+
+
+-----------------------------------------------------------------------------------
+
+Why OAuth 2.0 is used
+
+Avoids sending username/password with every API call
+
+Provides temporary, revocable access
+
+Industry-accepted security standard
+
+How it works (simple flow)
+Client sends credentials to OAuth server
+OAuth server validates credentials
+OAuth server returns access token
+Client uses token to access APIs
+
+Why x-www-form-urlencoded
+OAuth 2.0 specification requires parameters as key-value pairs
+Lightweight and secure for credential exchange
+Universally supported
+
+Example (Salesforce Token API)
+Endpoint: /services/oauth2/token
+Body type: x-www-form-urlencoded
+Used only for authenticatio
+
+
+
+
+--------------------------------------
+
+To set variable datas in a global / accessible place :
+
+1. Global --> Globally available throughout all the collection present in your workspace
+2. Collection --> COllection variables are accesible only within the collection
+3. Environment  --> ENvironment variables are accssible only within the particular selected environment of the workspace
+
+---------------------------------------------
+
+Schema Validation in POSTMAN :
+
+const schema = {
+    type: "object",
+    properties: {
+        access_token: { type: "string" },
+        instance_url: { type: "string" },
+        id: { type: "string" },
+        token_type: { type: "string" },
+        issued_at: { type: "string" },
+        signature: { type: "string" }
+    },
+    required: ["access_token", "instance_url", "id", "token_type", "issued_at", "signature"]
+};
+
+// 2. Test the response against the schema
+pm.test("Response matches schema", function () {
+    pm.response.to.have.jsonSchema(schema);
+});
+
+JSON Schema Validation
+🔍 What exactly is happening here?
+
+You are defining a JSON Schema (a standard format) and validating your API response against it.
+
+👉 So the correct term is:
+
+“Response Body JSON Schema Validation”
+
+ Simple Explanation
+
+You are not validating values
+You are validating:
+Structure (object)
+Data types (string, number, etc.)
+Required fields
+
+🎯 One-line Answer (Very Important)
+
+👉
+“This is JSON Schema validation used to validate API response structure, data types, and required fields.”
+
+🧩 Breakdown of Your Schema
+type: "object"
+
+✔ Response must be an object
+
+properties: { ... }
+
+✔ Defines expected fields and their types
+
+required: [...]
+
+✔ Ensures mandatory fields are present
+
+-------------------------------
+Schema Validation in Playwright :
+
+import { expect, test } from "@playwright/test";
+import Ajv from "ajv";
+
+let token: any
+let inst_url: any
+let tokenType: any
+let id: any
+
+const ajv = new Ajv();
+
+const schema = {
+    type: "object",
+    properties: {
+        access_token: { type: "string" },
+        instance_url: { type: "string" },
+        id: { type: "string" },
+        token_type: { type: "string" },
+        issued_at: { type: "string" },
+        signature: { type: "string" }
+    },
+    required: ["access_token", "instance_url", "id", "token_type", "issued_at", "signature"]
+};
+
+test.describe.serial(`Salesforce API testing`, async () => {
+
+    test(`Generate Token`, async ({ request }) => {
+
+        const response = await request.post(`https://login.salesforce.com/services/oauth2/token`, {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            form: {
+                client_id: "xxx",
+                client_secret: "xxx",
+                username: "xxx",
+                password: "xxx",
+                grant_type: "password"
+            }
+        });
+
+        const responseBody = await response.json();
+        console.log(responseBody);
+
+        // ✅ Schema Validation (Equivalent to Postman)
+        const validate = ajv.compile(schema);
+        const valid = validate(responseBody);
+
+        expect(valid).toBeTruthy();
+
+        if (!valid) {
+            console.log(validate.errors);
+        }
+
+        token = responseBody.access_token;
+        inst_url = responseBody.instance_url;
+        tokenType = responseBody.token_type;
+    });
+});
+
+
+
+--------------------------
+Different types of variables in POSTMAN :
+--------------------------------------
+
+1. Global Variables
+2. Collection Variables
+3. Environment Variables
+
+
+---------------------------------------------
+
+/* 
+Playwright Built-in Fixtures
+
+UI Testing:
+- page fixture:
+  Creates an isolated browser context and provides a Page object for UI automation.
+  
+  Example:
+  page.goto("https://example.com");
+
+API Testing:
+- request fixture:
+  Creates an isolated APIRequestContext for making HTTP requests without launching a browser.
+
+  Example:
+  request.post("/users", {
+    data: { name: "John" }
+  });
+*/
+
+| UI Testing                  | API Testing                                                            |
+| --------------------------- | ---------------------------------------------------------------------- |
+| Uses `page` fixture         | Uses `request` fixture                                                 |
+| Opens a browser             | No browser is launched                                                 |
+| Interacts with web elements | Sends HTTP requests directly                                           |
+| `page.goto()`               | `request.get()`, `request.post()`, `request.put()`, `request.delete()` |
+
+
+------------------------------------------------------------------------------------------
+
+# Serialization and Deserialization in REST API (TypeScript)
+
+In **REST APIs**, **serialization** and **deserialization** are about **converting data between objects and a format that can travel over the network** (like JSON).
+
+This is extremely important when working with **API testing, Playwright API testing, or frontend-backend communication**.
+
+---
+
+## 1️⃣ What is Serialization?
+
+### ✅ Definition
+
+**Serialization** is the process of **converting a TypeScript/JavaScript object into JSON** so it can be sent over HTTP.
+
+📦 Object → 📄 JSON
+
+---
+
+### 🔹 Real-life analogy
+
+Think of **serialization** like:
+
+> Packing your luggempId into a **suitcase** before travelling ✈️
+
+Clothes (object) → packed suitcase (JSON)
+
+---
+
+### 🔹 Example (REST API Request)
+
+#### TypeScript object
+
+```ts
+const user = {
+  name: "Ravi",
+  empId: 30,
+  city: "Chennai"
+};
+```
+
+#### After serialization (JSON sent in request body)
+
+```json
+{
+  "name": "Ravi",
+  "empId": 30,
+  "city": "Chennai"
+}
+```
+
+➡️ This JSON is what actually travels over HTTP.
+
+> In JavaScript/TypeScript, this conversion is usually done using:
+
+```ts
+JSON.stringify(user);
+```
+
+---
+
+### 🔹 Where serialization happens
+
+* When **client sends request body**
+* While calling **POST / PUT / PATCH APIs**
+
+---
+
+## 2️⃣ What is Deserialization?
+
+### ✅ Definition
+
+**Deserialization** is the process of **converting received JSON back into a TypeScript object**.
+
+📄 JSON →  Object
+
+---
+
+### 🔹 Real-life analogy
+
+Think of **deserialization** like:
+
+> Unpacking your suitcase after reaching your destination 🧳
+
+Suitcase (JSON) → clothes (object)
+
+---
+
+### 🔹 Example (REST API Response)
+
+#### API Response (JSON)
+
+```json
+{
+  "id": 101,
+  "name": "Ravi",
+  "empId": 30,
+  "city": "Chennai"
+}
+```
+
+#### After deserialization (TypeScript object)
+
+const responseBody = await response.json(); // JSON → Object
+console.log(responseBody.name); // Ravi
+
+
+> This is internally similar to:
+
+```ts
+JSON.parse(jsonString);
+```
+
+---
+
+### 🔹 Where deserialization happens
+
+* When **client receives response**
+* While validating **API responses**
+
+---
+
+## 3️⃣ Serialization vs Deserialization (Quick Table)
+
+| Aspect     | Serialization | Deserialization |
+| ---------- | ------------- | --------------- |
+| Direction  | Object → JSON | JSON → Object   |
+| Used in    | Request body  | Response body   |
+| Happens at | Client side   | Client side     |
+| Purpose    | Send data     | Read / validate |
+
+---
+
+## 4️⃣ Why are they important in REST API testing?
+
+Especially useful when you do **automation** using **Playwright API**, **Axios**, or **Fetch**.
+
+### 🔹 Benefits
+
+✅ Cleaner code
+✅ Easy request creation
+✅ Type safety (with interfaces)
+✅ Less manual JSON handling
+
+---
+
+## 5️⃣ Example in Playwright API Testing
+
+### 🔹 Serialization (request)
+
+```ts
+await request.post("/users", {
+  data: user   // Object auto-serialized to JSON
+});
+```
+
+---
+
+### 🔹 Deserialization (response)
+
+```ts
+const response = await request.get("/users/101");
+const userData = await response.json(); // JSON → Object
+
+console.log(userData.name);
+```
+
+---
+
+## 6️⃣ Simple 
+
+> **Serialization = Send**
+> **Deserialization = Receive**
+
+---
+
+## 7️⃣ In short
+
+> **Serialization** converts a TypeScript object into JSON so it can be sent in a REST API request.
+> **Deserialization** converts the received JSON response back into a TypeScript object for easy processing and validation.
+
+---
