@@ -1,0 +1,399 @@
+📑 **Agenda for Week 8 Day 1: MCP, Test Annotation, Custom Fixture in POM
+🎯 [Focus: MCP, Custom Fixture and Framework Walkthrough]
+
+📆 [03 October Saturday]
+
+🕝 Session Highlights
+
+⿡ Recap
+Quick review of previous learnings.
+
+1. Understanding MCP Server Integration and Playwright Agents.
+Integrating Playwright tests with MCP (Model Context Protocol) server for enhanced test management and reporting.
+Examples: Uploading test results, managing test cases, and generating reports.
+
+BREAKOUT SESSION FOR MCP HANDSON
+
+2. Hooks Test Annotation
+* Different test annotation used as part of testcase execution.
+
+3. Test Annotations
+* Enhancing test readability and control using annotations.
+* Examples: Skipping, focusing, or tagging specific tests.
+
+Break + Breakout
+
+4. Custom Fixture
+Creating reusable test setup using custom fixtures.
+Implementing the same in POM.
+Examples: Injecting test data, context, or utilities.
+
+5. Playwrigh Framework Walkthrough
+
+
+🕡 Wrap Up / Q&A
+
+📝 Keep your physical notebook and pen handy to sketch out ideas and test workflows!
+
+-----------------------------------------------------------------------------------------------
+
+Notes :
+
+------------------------------
+MCP Description :
+---
+
+Playwright-Specific Interview Answer
+
+In Playwright automation, MCP allows an AI assistant to communicate with a Playwright server and execute browser actions such as clicking buttons, filling forms, navigating pages, and validating UI elements. 
+The LLM decides what action to perform, MCP translates the request into a standard format, and Playwright executes it in the browser and returns the results back to the LLM.
+
+------------------------------------------
+Standard protocol that allows LLMs to discover and communicate with external tools such as Playwright.
+
+Without MCP:
+LLM needs custom integrations for every tool
+
+With MCP:
+One standard protocol for all tools
+
+------------------------------------------------------------------------------
+MCP Line Diagram :
+---
+                 USER PROMPT
+                       │
+                       ▼
+            ┌─────────────────┐
+            │       LLM       │
+            │ GPT/Claude/etc  │
+            └─────────────────┘
+                       │
+                       ▼
+            ┌─────────────────┐
+            │       MCP       │
+            │ Standard Tool   │
+            │ Communication   │
+            │ Protocol        │
+            └─────────────────┘
+                       │
+                       ▼
+            ┌─────────────────┐
+            │ Playwright MCP  │
+            │     Server      │
+            └─────────────────┘
+                       │
+                       ▼
+            ┌─────────────────┐
+            │    Browser      │
+            └─────────────────┘
+                       │
+                       ▼
+                 Web Results
+
+Results flow back through:
+Browser → Playwright → MCP → LLM
+
+---------------------------------------
+
+LLM
+ │
+ │ "I need to interact with the browser"
+ ▼
+MCP
+ │
+ │ provides access to
+ ▼
+Playwright MCP Server
+ │
+ ├── browser navigation
+ ├── click
+ ├── fill
+ ├── select
+ ├── inspect page
+ ├── take screenshot
+ ├── locate elements
+ └── etc.
+ │
+ ▼
+Browser
+A concrete example
+
+Suppose you tell the AI:
+
+"Open Salesforce, enter the username and password, and click Login."
+
+The LLM may reason that it needs browser actions such as:
+
+Navigate → https://login.salesforce.com
+
+Fill → Username textbox
+
+Fill → Password textbox
+
+Click → Login button
+
+Those are exposed as tools/capabilities through the Playwright MCP server.
+
+----------------------------------------------------
+
+| Layer                     | Responsibility                                                   |
+| ------------------------- | ---------------------------------------------------------------- |
+| **LLM**                   | Understands the user's request and decides what needs to be done |
+| **MCP**                   | Standard communication protocol between AI and tools             |
+| **Playwright MCP Server** | Makes Playwright browser capabilities available to the AI        |
+| **Playwright**            | Performs the actual browser interaction                          |
+| **Browser**               | Executes the interaction against the website                     |
+
+
+------------------------------------------------------------------------------
+
+
+# Test Annotation : Hooks
+---
+
+--> Control the behaviour of the execution.
+
+hooks -> The execution flow before and after the actual test execution.
+------
+test.beforeAll --> before all test it will be executed only ones
+test.beforeEach --> before each test it will be executed
+test.afterEach -->  after each test it will be executed
+test.afterAll --> after all test it will be executed
+
+
+10 tests 
+Step1: BeforeAll --> 1 time
+Ones before all test it will be executed only ones to connect your DB to fetch the data and store it in a variable to use in all the test cases.
+
+Step2: BeforeEach --> 10 times
+Ones before each test it will be executed to login to the application and perform the action.
+Each time should perform this action ? => Login to the application
+
+Step3: Actual Execution --> 10 times // 10 test cases will be executed
+
+Step4: AfterEach --> 10 times // report captured for each test case and logout from the application
+
+Step5: AfterAll --> 1 time 
+//Summary report generated and sent to the test management tool
+// disconnect the DB connection and clean up the data
+
+
+
+Other Test Annotation 
+---
+
+test.only --> focus on a specific test.
+test.skip --> ignore the test from execution
+test.fixme --> track and know failures that are yet tp be fixed
+test.fail --> for negative testing --> test has to fail is the expectation
+test.slow --> triple the timeout of the tests execution --> 30 s --> 60 s for the entire test execution
+test.describe --> grouping the test depending on the status of the other test.
+test.use -->use the functionalities
+
+----------------------------------------
+
+``ts
+import { test, expect } from "@playwright/test";
+
+/**
+ * =========================
+ * test.skip()
+ * =========================
+ * Purpose:
+ * - Do NOT execute the test at all
+ * - Used when environment / feature is NOT ready
+ */
+test.skip('Skip when environment is not ready', async ({ page }) => {
+  await page.goto('http://leaftaps.com/opentaps/control/main');
+
+  await page.locator('#username').fill('democsr');
+  await page.locator('#password').fill('crmsfa');
+  await page.locator('.decorativeSubmit').click();
+  await page.locator('text=CRM/SFA').click();
+});
+
+
+/**
+ * =========================
+ * test.fixme()
+ * =========================
+ * Purpose:
+ * - Test is known to be broken or flaky
+ * - Acts as a reminder to FIX later
+ * - Test will be skipped, but marked as "needs fixing"
+ */
+test.fixme('Test is under repair / flaky', async ({ page }) => {
+  await page.goto('http://leaftaps.com/opentaps/control/main');
+
+  await page.locator('#username').fill('democsr');
+  await page.locator('#password').fill('crmsfa');
+  await page.locator('.decorativeSubmit').click();
+  await page.locator('text=CRM/SFA').click();
+});
+
+
+/**
+ * =========================
+ * test.fail()
+ * =========================
+ * Purpose:
+ * - Test WILL run
+ * - Failure is EXPECTED due to a known bug
+ * - Failure will NOT break CI
+ */
+test.fail('Known bug: CRM link not visible', async ({ page }) => {
+  await page.goto('http://leaftaps.com/opentaps/control/main');
+
+  await page.locator('#username').fill('democsr');
+  await page.locator('#password').fill('crmsfa');
+  await page.locator('.decorativeSubmit').click();
+
+  // Known issue: locator fails
+  await expect(page.locator('text=CRM/SFA')).toBeVisible();
+});
+
+
+/**
+ * =========================
+ * test.slow()
+ * =========================
+ * Purpose:
+ * - Mark test as slow
+ * - Doubles the default timeout
+ */
+test('Slow test example (timeout increased)', async ({ page }) => {
+
+  test.slow(); // increases timeout (approx 3x default)
+
+  await page.goto('http://leaftaps.com/opentaps/control/main');
+
+  await page.locator('#username').fill('democsr');
+  await page.locator('#password').fill('crmsfa');
+
+  await page.locator('.decorativeSubmit').click();
+
+  await page.locator('text=CRM/SFA').click();
+});
+```
+
+---
+
+##  Simple Explanation 
+
+###  `test.skip()`
+
+>  Don’t run this test at all
+
+* Used when:
+
+  * Environment is down
+  * Feature not implemented
+* Result in report: **Skipped**
+
+---
+
+###  `test.fixme()`
+
+>  This test is broken – fix it later
+
+* Same as skip
+* But tells the **team**:
+
+  > “This test needs fixing”
+* Very useful for flaky tests
+
+---
+
+###  `test.fail()`
+
+>  Run the test, but failure is expected
+
+* Test **executes**
+* If it fails → ✔ expected
+* If it passes → ⚠ unexpected (bug may be fixed!)
+
+✅ Real Project Use Cases
+1️⃣ Known Bug in Application
+test.fail("Login button disabled issue", async () => {
+
+👉 Example:
+
+Dev team says: “Bug exists”
+
+You don’t want pipeline to fail
+
+✔️ Use test.fail()
+
+2️⃣ Temporary Bug (Waiting for Fix)
+
+Feature broken in current build
+
+Fix coming in next sprint
+
+✔️ Mark test as fail instead of deleting it
+
+3️⃣ CI/CD Stability
+
+👉 Without test.fail():
+
+Pipeline ❌ fails
+
+Noise in reports
+
+👉 With test.fail():
+
+Pipeline ✅ stable
+
+Still tracking bug
+
+4️⃣ Bug Verification Scenario
+test.fail("BUG-123: CRM link issue", async () => {
+
+👉 When bug gets fixed:
+
+Test will PASS unexpectedly
+
+Playwright marks it ❌ (unexpected pass)
+
+➡️ This alerts you:
+
+"Bug is fixed — remove test.fail() now"
+
+🔥 Golden Rule (Very Important)
+test.fail() is NOT to skip test
+test.fail() is to TRACK known failures
+
+---
+
+###  `test.slow()`
+
+>  This test needs more time
+
+* Increases timeout
+* Useful for:
+
+  * Slow APIs
+  * Heavy pages
+  * Large uploads/downloads
+
+---
+
+##  Quick Memory Table
+
+| Annotation   | Runs? | Purpose                         |
+| ------------ | ----- | ------------------------------- |
+| `test.skip`  | ❌ No  | Environment / feature not ready |
+| `test.fixme` | ❌ No  | Broken / flaky test             |
+| `test.fail`  | ✅ Yes | Known bug                       |
+| `test.slow`  | ✅ Yes | Needs more time                 |
+
+
+-----------------------------------------------------------------------------------------
+
+Test case tagging:
+---------------------
+
+
+npx playwright test --grep "@regression"
+
+-----------------------------

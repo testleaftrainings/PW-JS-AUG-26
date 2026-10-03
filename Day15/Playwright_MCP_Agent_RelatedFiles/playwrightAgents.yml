@@ -1,0 +1,32 @@
+Using playwright co-pilot and MCP do pls follow below steps :
+
+In the termninal uss :
+
+npm init playwright@latest
+
+Step 1 — Install Playwright Test (latest) 
+npm install -D @playwright/test@latest 
+Confirm package.json has @playwright/test in devDependencies. 
+
+Step 2 — Initialize the agents 
+In the project root run (choose the client you will use). Example for VS Code loop: 
+npx playwright init-agents --loop=vscode
+
+Use "planner agent" and give below prompt to generate the test plan 
+
+BaseURL :
+
+http://leaftaps.com/opentaps/control/main
+
+Use the below credentials :
+
+Username : democsr2
+Password : crmsfa
+
+Create a new lead in a below page
+
+http://leaftaps.com/crmsfa/control/createLeadForm
+
+
+Ones after the planner is ready change to "generator agent" and attach the planner to generate the code 
+If the generated code has any issue use "healer agent" to fix that same
