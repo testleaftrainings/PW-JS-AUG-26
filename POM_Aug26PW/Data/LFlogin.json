@@ -1,0 +1,14 @@
+[
+    {
+        "URL":"https://leaftaps.com/opentaps/control/main",
+        "TCNo": "TC001",
+        "Username": "democsr",
+        "Password": "crmsfa"
+    },
+    {
+        "URL":"https://leaftaps.com/opentaps/control/main",
+        "TCNo": "TC002",
+        "Username": "demosalesmanager",
+        "Password": "crmsfa"
+    }
+]
