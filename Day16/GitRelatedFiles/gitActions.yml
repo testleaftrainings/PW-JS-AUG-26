@@ -1,0 +1,554 @@
+
+# 📘 GitHub Repository Workflow Guide
+
+## 1. Creating a New Repository from Command Line
+
+
+# Initialize local repository
+git init
+
+# Rename branch to main
+git branch -M main
+
+# Stage all files and commit
+git add .
+git commit -m "Initial commit"
+
+# Add remote GitHub repo
+git remote add origin https://github.com/ravindrantest/github_actions_jun26.git
+
+# Push changes to GitHub
+git push -u origin main
+
+
+---
+
+
+Feature Branch Workflow:
+
+# Create a new branch
+git checkout -b feature/login-test
+
+👉 Naming convention:
+
+feature/... → new feature
+bugfix/... → bug fix
+hotfix/... → urgent fix
+
+✍️ Step 2: Work on Your Changes
+
+git add .
+git commit -m "Add login test scenario"
+
+🚀 Step 3: Push Feature Branch to GitHub
+
+git push origin feature/login-test
+
+👉 This creates the branch in GitHub.
+
+🔁 Step 4: Create Pull Request (PR)
+
+Go to your GitHub repository:
+👉 Example: https://github.com/<your-username>/<repo-name>
+
+Then:
+
+Click "Compare & pull request"
+Note: If you don't see this button, go to Pull requests → New pull request and select main as the base branch and feature/login-test as the compare branch. 
+After pushing the feature branch, GitHub may display "Compare & pull request". If it is not displayed, go to Pull requests → New pull request and select main as the base branch and feature/login-test as the compare branch.
+
+Ensure:
+Base branch → main
+
+Compare branch → feature/login-test
+
+Add:
+Title
+Description of changes
+Click Create Pull Request
+
+ Step 5: Code Review (Team Step)
+
+Team members review your code
+They may:
+
+Approve ✅
+Request changes 🔄
+
+🔀 Step 6: Merge Pull Request
+
+After approval:
+
+Click Merge Pull Request
+Choose:
+Create a merge commit (default)
+OR Squash and merge (clean history)
+
+Step 7: Delete Feature Branch (Optional but Recommended)
+# Delete locally
+git branch -d feature/login-test
+
+# Delete from remote
+git push origin --delete feature/login-test
+
+Step 8: Sync Local Main After Merge
+git checkout main
+git pull origin main
+
+Best Practices :
+
+Never work directly on main
+Always pull latest changes before creating a branch
+Keep PRs small and focused
+Write clear PR descriptions
+Use meaningful branch names
+
+
+--------------------------------------
+
+## 2. Cloning or Pulling Files from GitHub
+
+### 🔹 First time (clone entire repo)
+
+
+git clone https://github.com/testleaftrainings/PW-JS-JAN-26.git
+
+
+### 🔹 Already cloned (get latest changes)
+
+
+git pull origin main
+
+
+### 🔹 Pull only one specific file (less common)
+
+
+git fetch origin main
+git checkout origin/main -- tests/01-launchBrowser.spec.ts
+
+
+---
+
+## 3. Pushing Files to GitHub
+
+### 🔹 Push a single file
+
+git add tests/filename.spec.ts
+git commit -m "Add test for filename"
+git push origin main
+
+### 🔹 Push multiple specific files
+
+git add tests/filename1.spec.ts tests/filename2.spec.ts
+git commit -m "Update tests filename1 and filename2"
+git push origin main
+
+### 🔹 Push all changes in a specific folder
+
+git add tests/
+git commit -m "Commit all changes inside tests folder"
+git push origin main
+
+
+### 🔹 Push everything inside `tests/` but not other files
+
+(same as above)
+
+git add tests/
+git commit -m "Commit all changes inside tests folder"
+git push origin main
+
+---
+
+## 4. Typical Update Workflow
+
+If you edited a file in VS Code (example: `03-page-fixture.spec.ts`):
+
+# Step 1: Stage the file
+git add tests/03-page-fixture.spec.ts
+
+# Step 2: Commit changes
+git commit -m "Update test to log page title in 03-page-fixture.spec.ts"
+
+# Step 3: Push to GitHub
+git push origin main
+
+---
+
+✅ **Tips:**
+
+* Always run `git status` to check staged/unstaged changes.
+* Use meaningful commit messages.
+* Use `git pull origin main` before pushing to avoid conflicts.
+
+
+
+---
+
+5. Feature Branch & Pull Request Workflow
+
+🔹 Why use a feature branch?
+
+Keeps main stable
+Enables code review
+Prevents breaking production code
+
+Standard practice in teams
+
+ Step 1: Create a Feature Branch
+
+# Make sure you are on main and up-to-date
+git checkout main
+git pull origin main
+
+
+---------------------------
+
+9. Difference between Git Merge and Git Rebase
+Answer
+
+Both merge and rebase are used to combine changes from one branch into another, but they do it differently.
+
+Git Merge	Git Rebase
+Preserves complete branch history	Rewrites commit history
+Creates a new merge commit	No merge commit is created
+Easy to understand	Produces a cleaner, linear history
+Safe for shared branches	Should not be used on branches already pushed/shared
+History looks branched	History looks straight
+Example
+
+Suppose we have
+
+main
+
+A ---- B ---- C
+
+feature
+
+      \
+       D ---- E
+Using Merge
+git checkout main
+git merge feature
+
+Result
+
+A ---- B ---- C -------- M
+      \                /
+       D ------------ E
+
+A new Merge Commit (M) is created.
+
+Using Rebase
+git checkout feature
+git rebase main
+
+Result
+
+A ---- B ---- C ---- D' ---- E'
+
+The commits D and E are replayed on top of main.
+
+When to use Merge?
+Team collaboration
+Shared branches
+Preserve history
+Easier to troubleshoot
+
+Example
+
+git checkout main
+git merge feature
+When to use Rebase?
+Before creating a Pull Request
+To keep history clean
+Personal/local branches
+
+Example
+
+git checkout feature
+git rebase main
+Interview Answer (1 minute)
+
+Git Merge combines two branches by creating a merge commit, so it preserves the complete branch history. Git Rebase moves the feature branch commits on top of the latest main branch, creating a cleaner linear history without a merge commit. I generally use Merge for shared branches because it is safer, and Rebase for my local feature branches before raising a pull request.
+
+
+`git fetch` and `git pull` are both used to get changes from a remote repository, but they behave differently.
+
+| Command     | What it does                                                                | Updates your local branch? |
+| ----------- | --------------------------------------------------------------------------- | -------------------------- |
+| `git fetch` | Downloads the latest commits, branches, and tags from the remote repository | ❌ No                       |
+| `git pull`  | Downloads changes **and** merges (or rebases) them into your current branch | ✅ Yes                      |
+
+### 1. `git fetch`
+
+Fetch only downloads the latest changes from the remote repository. It **does not modify your working files or current branch**.
+
+Example:
+
+```bash
+git fetch origin
+```
+
+Suppose the remote branch has new commits:
+
+```
+Remote (origin/main): A -- B -- C
+Local (main):         A -- B
+```
+
+After `git fetch`:
+
+```
+origin/main: A -- B -- C
+main:        A -- B
+```
+
+Your local `main` is unchanged. You can inspect the new commits before merging:
+
+```bash
+git log main..origin/main
+git diff main origin/main
+```
+
+### 2. `git pull`
+
+Pull is essentially:
+
+```bash
+git fetch
+git merge
+```
+
+(or `git fetch` + `git rebase` if configured).
+
+Example:
+
+```bash
+git pull origin main
+```
+
+After pulling:
+
+```
+Before:
+main:        A -- B
+origin/main: A -- B -- C
+
+After:
+main:        A -- B -- C
+```
+
+Your local branch is updated immediately.
+
+### When to use each
+
+* Use **`git fetch`** when you want to:
+
+  * See what others have pushed.
+  * Review changes before merging.
+  * Keep your local repository updated without affecting your work.
+
+* Use **`git pull`** when you:
+
+  * Want to update your current branch immediately.
+  * Are ready to incorporate remote changes into your work.
+
+### Simple analogy
+
+Imagine a shared folder:
+
+* **`git fetch`** = Check for new files and download them to a separate folder without touching your current work.
+* **`git pull`** = Download the new files and immediately combine them with your current work.
+
+In practice, many developers prefer:
+
+```bash
+git fetch
+git status
+git log HEAD..origin/main
+```
+
+to review incoming changes first, then merge or rebase manually. This gives more control and helps avoid unexpected merge conflicts.
+
+
+1. git fetch vs git pull
+
+Both get changes from the remote repository, but they behave differently.
+
+git fetch
+
+Downloads the latest changes from remote, but does NOT modify your current branch.
+
+git fetch origin
+
+Suppose:
+
+Remote (GitHub)
+A---B---C---D
+        ↑
+      main
+
+Local
+A---B---C
+        ↑
+      main
+
+After:
+
+git fetch origin
+
+You get:
+
+Remote-tracking branch
+A---B---C---D
+            ↑
+      origin/main
+
+Your local branch
+A---B---C
+        ↑
+      main
+
+Your working code is unchanged.
+
+You can inspect what changed:
+
+git log HEAD..origin/main
+
+Then decide whether you want to merge/rebase.
+
+git pull
+
+pull essentially does:
+
+git fetch
+git merge
+
+So:
+
+git pull origin main
+
+downloads the latest changes and integrates them into your current branch.
+
+Example:
+
+Before pull:
+
+Local:  A---B---C
+Remote: A---B---C---D---E
+
+After pull:
+
+Local:  A---B---C---D---E
+Easy interview answer
+
+git fetch downloads the latest changes from the remote repository without modifying my current branch. git pull downloads the changes and integrates them into my current branch, usually through merge or rebase.
+
+Simple way to remember
+
+Fetch = "Show me what's new."
+
+Pull = "Get what's new and apply it to my branch."
+
+2. What is git stash?
+
+git stash is used when you have uncommitted changes but need to temporarily switch context.
+
+For example, you're working on:
+
+feature/login
+
+and you have modified:
+
+login.spec.ts
+user.spec.ts
+
+But suddenly your manager says:
+
+"There's a production issue. Switch to main and fix it."
+
+You can't/don't want to commit your incomplete work yet.
+
+So you can do:
+
+git stash
+
+Git temporarily stores your uncommitted changes and gives you a clean working directory.
+
+Before stash:
+
+login.spec.ts   → modified
+user.spec.ts    → modified
+
+After:
+
+git stash
+Working directory → clean
+
+Now you can switch branches:
+
+git switch main
+
+Fix the urgent issue, commit it, and later return to your feature branch.
+
+Then restore your previous work:
+
+git stash pop
+
+Your changes come back.
+
+stash workflow
+
+A very common workflow is:
+
+git status
+
+git stash
+
+git switch main
+
+# fix urgent issue
+
+git add .
+git commit -m "Fix production issue"
+
+git switch feature/login
+
+git stash pop
+
+Your unfinished work is restored.
+
+3. git stash pop vs git stash apply
+
+This is an important interview question.
+
+git stash apply
+
+Restores the changes but keeps the stash.
+
+git stash apply
+Stash
+  ↓
+Working directory
+
+Stash still exists
+
+You can see it with:
+
+git stash list
+git stash pop
+
+Restores the changes and removes that stash if the apply succeeds.
+
+git stash pop
+Stash
+  ↓
+Working directory
+
+Stash removed
+Easy memory trick
+
+Apply = use it, keep it
+
+Pop = use it, remove it

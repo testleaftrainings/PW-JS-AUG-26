@@ -1,0 +1,16 @@
+📑 Agenda for Week 8 Day 2: GitHub Actions CI and Playwright Framework Walkthrough
+🎯 Focus: Understanding core concept on Continuous Integration and Playwright Hybrid Framework
+
+📆 04th October, Sunday
+
+1. GitActions & CI Integration
+Setting up Playwright tests to run in Continuous Integration (CI) pipelines.
+
+Examples: Configuring GitHub Actions to execute tests on code commits and pull requests.
+
+2. Playwright Framework Best Practices
+Discussing best practices for structuring and maintaining Playwright test suites.
+
+🕡 Wrap Up / Q&A
+
+---

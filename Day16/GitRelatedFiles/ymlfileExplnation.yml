@@ -1,0 +1,167 @@
+
+## 📝 Workflow Name
+
+name: Playwright Tests
+
+* This is just the **name** of the workflow (shows up in GitHub Actions tab).
+
+---
+
+## When it Runs
+
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+```
+
+* Runs **automatically** whenever:
+
+  * You push code to `main` or `master` branches.
+  * You open a pull request into `main` or `master`.
+
+✅ Add this under on:
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+  schedule:
+    - cron: "0 21 * * *"
+
+
+So your full trigger section becomes:
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: "0 21 * * *"
+
+🕘 What does "0 21 * * *" mean?
+
+GitHub Actions uses UTC time.
+
+0 21 * * * = 9:00 PM UTC
+
+India (IST) is UTC + 5:30
+So this runs at:
+
+2:30 AM IST every day
+
+If you want 11:00 PM IST, use:
+
+17:30 UTC → "30 17 * * *"
+
+
+Example for 11 PM IST:
+
+schedule:
+  - cron: "30 17 * * *"
+
+🧪 What will happen nightly?
+
+Every night:
+
+GitHub wakes up
+→ Starts Ubuntu runner
+→ Installs Node & Playwright
+→ Runs all tests
+→ Generates Playwright report
+→ Stores report for 30 days
+
+
+Even if no one pushes code.
+
+🎯 One-line summary
+
+Add schedule with a cron expression under on: to run Playwright tests automatically every night.
+
+---
+
+## Job Definition
+
+```yaml
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+```
+
+* Defines a **job** called `test`.
+* Runs on a fresh **Ubuntu Linux** machine in GitHub’s cloud.
+* Will stop if it runs longer than **60 minutes**.
+
+---
+
+## Steps in the Job
+
+### 1. Checkout Code
+
+```yaml
+- uses: actions/checkout@v4
+```
+
+* Downloads your repository code into the workflow environment.
+
+### 2. Setup Node.js
+
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: lts/*
+```
+
+* Installs **Node.js (latest LTS version)** → needed for Playwright.
+
+### 3. Install Dependencies
+
+```yaml
+- name: Install dependencies
+  run: npm ci
+```
+
+* Runs `npm ci` (clean install of dependencies from `package-lock.json`).
+
+### 4. Install Playwright Browsers
+
+```yaml
+- name: Install Playwright Browsers
+  run: npx playwright install --with-deps
+```
+
+* Downloads Playwright’s browsers (Chromium, Firefox, WebKit) + system deps.
+
+### 5. Run Playwright Tests
+
+```yaml
+- name: Run Playwright tests
+  run: npx playwright test
+```
+
+* Executes all your **Playwright test files**.
+
+### 6. Save Test Report
+
+```yaml
+- uses: actions/upload-artifact@v4
+  if: ${{ !cancelled() }}
+  with:
+    name: playwright-report
+    path: playwright-report/
+    retention-days: 30
+```
+
+* Uploads the **Playwright HTML test report** as an artifact.
+* Keeps it for **30 days**.
+* You can download it from the GitHub Actions run page.
+
+---
+
+✅ **In simple terms:**
+This workflow makes sure that every time you push or open a PR, your Playwright tests are automatically run on GitHub’s servers. If tests fail, you’ll see it in the Actions tab, and you can also download the test report.
